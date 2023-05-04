@@ -1,0 +1,7 @@
+node_modules
+.git
+Dockerfile
+.idea
+config/.env
+docker-compose.yml
+docker-compose-dev.yml
