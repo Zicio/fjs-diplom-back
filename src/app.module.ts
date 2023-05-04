@@ -13,6 +13,9 @@ import { HotelsModule } from './hotels/hotels.module';
     }),
     MongooseModule.forRoot(
       process.env.MONGO_URI || 'mongodb://root:root@mongo:27017/',
+      {
+        dbName: 'atom',
+      },
     ),
     UsersModule,
     HotelsModule,
