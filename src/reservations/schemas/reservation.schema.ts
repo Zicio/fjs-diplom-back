@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { User } from '../../users/schemas/user.schema';
 import { Hotel } from '../../hotels/schemas/hotel.schema';
 import { HotelRoom } from '../../hotels/schemas/hotelRoom.schema';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type ReservationDocument = Reservation & Document;
 

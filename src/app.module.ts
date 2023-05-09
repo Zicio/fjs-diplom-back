@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HotelsModule } from './hotels/hotels.module';
 import { ReservationsModule } from './reservations/reservations.module';
+import { SupportRequestModule } from './support-request/support-request.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReservationsModule } from './reservations/reservations.module';
     UsersModule,
     HotelsModule,
     ReservationsModule,
+    SupportRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
