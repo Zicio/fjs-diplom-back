@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HotelsModule } from './hotels/hotels.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { SupportRequestModule } from './support-request/support-request.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SupportRequestModule } from './support-request/support-request.module';
     HotelsModule,
     ReservationsModule,
     SupportRequestModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
