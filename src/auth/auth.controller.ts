@@ -1,19 +1,23 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtUnauthGuard } from './jwt-unauth.guard';
 
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @UseGuards(JwtUnauthGuard)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
-    return this.authService.login(loginDto, res); // TODO: подумать над Response
+    return this.authService.login(loginDto, res);
   }
 
   @Post('logout')
-  async logout() {
-    return this.authService.logout();
+  @UseGuards(JwtAuthGuard)
+  async logout(@Res() res: Response): Promise<void> {
+    return this.authService.logout(res);
   }
 }

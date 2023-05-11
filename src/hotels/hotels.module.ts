@@ -12,7 +12,7 @@ import { HotelRoom, HotelRoomSchema } from './schemas/hotelRoom.schema';
       { name: HotelRoom.name, schema: HotelRoomSchema },
     ]),
   ],
-  providers: [HotelsService],
+  providers: [HotelsService, HotelsRoomService],
   exports: [HotelsService, HotelsRoomService],
 })
 export class HotelsModule {}
