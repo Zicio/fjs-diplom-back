@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Types } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
@@ -35,25 +39,36 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, res: Response): Promise<void> {
-    const user: UserDocument | null = await this.usersService.findByEmail(
-      loginDto.email,
-    );
-    if (!user) {
-      throw new UnauthorizedException('Неверный логин/пароль');
+    try {
+      const user: UserDocument | null = await this.usersService.findByEmail(
+        loginDto.email,
+      );
+      if (!user) {
+        throw new UnauthorizedException('Неверный логин/пароль');
+      }
+      const isValidPassword: boolean = await bcrypt.compare(
+        loginDto.password,
+        user.passwordHash,
+      );
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Неверный логин/пароль');
+      }
+      const token: string = await this.createToken(user);
+      res.cookie('access_token', token, {
+        httpOnly: true,
+        maxAge: Number(process.env.COOKIE_EXPIRES) || 45 * 60 * 1000,
+      });
+      res.status(200).json({
+        email: user.email,
+        name: user.name,
+        contactPhone: user.contactPhone,
+      });
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        throw e;
+      }
+      throw new InternalServerErrorException('Вход не выполнен');
     }
-    const isValidPassword: boolean = await bcrypt.compare(
-      loginDto.password,
-      user.passwordHash,
-    );
-    if (!isValidPassword) {
-      throw new UnauthorizedException('Неверный логин/пароль');
-    }
-    const token: string = await this.createToken(user);
-    res.cookie('access_token', token, {
-      httpOnly: true,
-      maxAge: Number(process.env.COOKIE_EXPIRES) || 45 * 60 * 1000,
-    });
-    res.status(200).json({ token });
   }
 
   async logout(res: Response): Promise<void> {
