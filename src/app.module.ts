@@ -8,6 +8,7 @@ import { HotelsModule } from './hotels/hotels.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { SupportRequestModule } from './support-request/support-request.module';
 import { AuthModule } from './auth/auth.module';
+import { UserManagementModule } from './user-management/user-management.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     ReservationsModule,
     SupportRequestModule,
     AuthModule,
+    UserManagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],

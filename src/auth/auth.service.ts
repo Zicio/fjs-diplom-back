@@ -30,10 +30,11 @@ export class AuthService {
     };
     return this.jwtService.sign(payload, {
       expiresIn: Number(process.env.JWT_EXPIRES) || 60 * 60 * 1000,
+      secret: process.env.JWT_SECRET || 'secret',
     });
   }
 
-  async login(loginDto: LoginDto, res: Response) {
+  async login(loginDto: LoginDto, res: Response): Promise<void> {
     const user: UserDocument | null = await this.usersService.findByEmail(
       loginDto.email,
     );
@@ -52,12 +53,11 @@ export class AuthService {
       httpOnly: true,
       maxAge: Number(process.env.COOKIE_EXPIRES) || 45 * 60 * 1000,
     });
-    console.log(token);
-    return { token };
+    res.status(200).json({ token });
   }
 
   async logout(res: Response): Promise<void> {
     res.clearCookie('access_token');
-    return;
+    res.status(204).end();
   }
 }
