@@ -5,7 +5,7 @@ import { Message } from './message.schema';
 
 export type SupportRequestDocument = SupportRequest & Document;
 
-@Schema({ timestamps: { createdAt: 'createdAt' } }) // TODO : Проверить работу createdAt
+@Schema({ timestamps: { createdAt: 'createdAt' } })
 export class SupportRequest {
   @Prop({ ref: User.name, required: true })
   user: Types.ObjectId;

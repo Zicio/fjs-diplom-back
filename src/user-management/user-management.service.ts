@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -33,19 +37,27 @@ export class UserManagementService {
 
   async createUser(createUserDto: CreateUserDto): Promise<createUserResponse> {
     try {
-      // TODO Добавить проверку на дубликаты по почте
-      const { password, ...rest } = createUserDto;
+      const { password, email, ...rest } = createUserDto;
+      const user: UserDocument | null = await this.usersService.findByEmail(
+        email,
+      );
+      if (user) {
+        throw new BadRequestException(
+          'Пользователь с таким email уже существует',
+        );
+      }
       const passwordHash: string = await bcrypt.hash(password, 10);
-      const user: UserDocument = await this.usersService.create({
+      const newUser: UserDocument = await this.usersService.create({
         passwordHash,
+        email,
         ...rest,
       });
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        contactPhone: user.contactPhone,
-        role: user.role,
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        contactPhone: newUser.contactPhone,
+        role: newUser.role,
       };
     } catch (e: unknown) {
       if (e instanceof Error) {
