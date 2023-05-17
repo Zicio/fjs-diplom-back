@@ -5,6 +5,14 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+export interface QueryParams {
+  limit: number;
+  offset: number;
+  name: string;
+  email: string;
+  contactPhone: string;
+}
+
 @Controller('api')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserManagementController {
@@ -18,37 +26,13 @@ export class UserManagementController {
 
   @Get('admin/users')
   @Roles(Role.Admin)
-  async getUsersAsAdmin(
-    @Query('limit') limit: number,
-    @Query('offset') offset: number,
-    @Query('name') name: string,
-    @Query('email') email: string,
-    @Query('contactPhone') contactPhone: string,
-  ) {
-    return this.userManagementService.getUsers({
-      limit,
-      offset,
-      name,
-      email,
-      contactPhone,
-    });
+  async getUsersAsAdmin(@Query() query: QueryParams) {
+    return this.userManagementService.getUsers(query);
   }
 
   @Get('manager/users')
   @Roles(Role.Manager)
-  async getUsersAsManager(
-    @Query('limit') limit: number,
-    @Query('offset') offset: number,
-    @Query('name') name: string,
-    @Query('email') email: string,
-    @Query('contactPhone') contactPhone: string,
-  ) {
-    return this.userManagementService.getUsers({
-      limit,
-      offset,
-      name,
-      email,
-      contactPhone,
-    });
+  async getUsersAsManager(@Query() query: QueryParams) {
+    return this.userManagementService.getUsers(query);
   }
 }

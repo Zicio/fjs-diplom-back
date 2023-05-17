@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserDocument } from '../users/schemas/user.schema';
+import { QueryParams } from './user-management.controller';
 
 export interface createUserResponse {
   id: number;
@@ -16,13 +17,13 @@ export interface createUserResponse {
   role: string;
 }
 
-interface getUsersParams {
-  limit: number;
-  offset: number;
-  name: string;
-  email: string;
-  contactPhone: string;
-}
+// interface getUsersParams {
+//   limit: number;
+//   offset: number;
+//   name: string;
+//   email: string;
+//   contactPhone: string;
+// }
 
 export interface getUsersResponse {
   id: number;
@@ -67,7 +68,7 @@ export class UserManagementService {
     }
   }
 
-  async getUsers(params: getUsersParams): Promise<getUsersResponse[]> {
+  async getUsers(params: QueryParams): Promise<getUsersResponse[]> {
     try {
       const users = await this.usersService.findAll(params);
       return users.map((user) => {
