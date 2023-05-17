@@ -17,14 +17,6 @@ export interface createUserResponse {
   role: string;
 }
 
-// interface getUsersParams {
-//   limit: number;
-//   offset: number;
-//   name: string;
-//   email: string;
-//   contactPhone: string;
-// }
-
 export interface getUsersResponse {
   id: number;
   email: string;
