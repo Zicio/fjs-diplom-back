@@ -5,7 +5,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-export interface QueryParams {
+export interface IQueryParams {
   limit: number;
   offset: number;
   name: string;
@@ -26,13 +26,13 @@ export class UserManagementController {
 
   @Get('admin/users')
   @Roles(Role.Admin)
-  async getUsersAsAdmin(@Query() query: QueryParams) {
+  async getUsersAsAdmin(@Query() query: IQueryParams) {
     return this.userManagementService.getUsers(query);
   }
 
   @Get('manager/users')
   @Roles(Role.Manager)
-  async getUsersAsManager(@Query() query: QueryParams) {
+  async getUsersAsManager(@Query() query: IQueryParams) {
     return this.userManagementService.getUsers(query);
   }
 }

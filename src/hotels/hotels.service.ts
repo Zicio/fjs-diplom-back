@@ -3,13 +3,13 @@ import { Hotel, HotelDocument } from './schemas/hotel.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
-interface SearchHotelParams {
+interface ISearchHotelParams {
   limit: number;
   offset: number;
   title: string;
 }
 
-interface UpdateHotelParams {
+interface IUpdateHotelParams {
   title: string;
   description: string;
 }
@@ -19,9 +19,9 @@ interface IHotelService {
 
   findById(id: Types.ObjectId): Promise<Hotel | null>;
 
-  search(params: SearchHotelParams): Promise<Hotel[]>;
+  search(params: ISearchHotelParams): Promise<Hotel[]>;
 
-  update(id: Types.ObjectId, data: UpdateHotelParams): Promise<Hotel | null>;
+  update(id: Types.ObjectId, data: IUpdateHotelParams): Promise<Hotel | null>;
 }
 
 @Injectable()
@@ -30,7 +30,7 @@ export class HotelsService implements IHotelService {
     @InjectModel(Hotel.name) private hotelModel: Model<HotelDocument>,
   ) {}
 
-  async create(data: any): Promise<Hotel> {
+  async create(data: Partial<Hotel>): Promise<Hotel> {
     const hotel = new this.hotelModel(data);
     return hotel.save();
   }
@@ -39,7 +39,7 @@ export class HotelsService implements IHotelService {
     return this.hotelModel.findById(id);
   }
 
-  async search(params: SearchHotelParams): Promise<Hotel[]> {
+  async search(params: ISearchHotelParams): Promise<Hotel[]> {
     const { limit, offset, title } = params;
     const query = {
       title: { $regex: new RegExp(title, 'i') },
@@ -49,7 +49,7 @@ export class HotelsService implements IHotelService {
 
   async update(
     id: Types.ObjectId,
-    data: UpdateHotelParams,
+    data: IUpdateHotelParams,
   ): Promise<Hotel | null> {
     return this.hotelModel.findByIdAndUpdate(id, data, { new: true });
   }

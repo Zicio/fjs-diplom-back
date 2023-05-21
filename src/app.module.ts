@@ -9,6 +9,8 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { SupportRequestModule } from './support-request/support-request.module';
 import { AuthModule } from './auth/auth.module';
 import { UserManagementModule } from './user-management/user-management.module';
+import { HotelsApiModule } from './hotels-api/hotels-api.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -21,12 +23,14 @@ import { UserManagementModule } from './user-management/user-management.module';
         dbName: 'atom',
       },
     ),
+    MulterModule.register({ dest: './uploads' }),
     UsersModule,
     HotelsModule,
     ReservationsModule,
     SupportRequestModule,
     AuthModule,
     UserManagementModule,
+    HotelsApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

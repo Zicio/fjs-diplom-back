@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HotelsService } from './hotels.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Hotel, HotelSchema } from './schemas/hotel.schema';
-import { HotelsRoomService } from './hotelsRoom.service';
+import { HotelsRoomsService } from './hotelsRooms.service';
 import { HotelRoom, HotelRoomSchema } from './schemas/hotelRoom.schema';
 
 @Module({
@@ -12,7 +12,7 @@ import { HotelRoom, HotelRoomSchema } from './schemas/hotelRoom.schema';
       { name: HotelRoom.name, schema: HotelRoomSchema },
     ]),
   ],
-  providers: [HotelsService, HotelsRoomService],
-  exports: [HotelsService, HotelsRoomService],
+  providers: [HotelsService, HotelsRoomsService],
+  exports: [HotelsService, HotelsRoomsService],
 })
 export class HotelsModule {}

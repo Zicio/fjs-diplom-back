@@ -3,19 +3,19 @@ import { HotelRoom, HotelRoomDocument } from './schemas/hotelRoom.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-interface SearchRoomsParams {
+interface ISearchRoomsParams {
   limit: number;
   offset: number;
-  hotel: string;
+  hotel: Types.ObjectId;
   isEnabled?: boolean;
 }
 
-interface IHotelRoomService {
+interface IHotelsRoomsService {
   create(data: Partial<HotelRoom>): Promise<HotelRoom>;
 
   findById(id: Types.ObjectId): Promise<HotelRoom | null>;
 
-  search(params: SearchRoomsParams): Promise<HotelRoom[]>;
+  search(params: ISearchRoomsParams): Promise<HotelRoom[]>;
 
   update(
     id: Types.ObjectId,
@@ -24,7 +24,7 @@ interface IHotelRoomService {
 }
 
 @Injectable()
-export class HotelsRoomService implements IHotelRoomService {
+export class HotelsRoomsService implements IHotelsRoomsService {
   constructor(
     @InjectModel(HotelRoom.name)
     private hotelRoomModel: Model<HotelRoomDocument>,
@@ -39,7 +39,7 @@ export class HotelsRoomService implements IHotelRoomService {
     return this.hotelRoomModel.findById(id);
   }
 
-  async search(params: SearchRoomsParams): Promise<HotelRoom[]> {
+  async search(params: ISearchRoomsParams): Promise<HotelRoom[]> {
     const { limit, offset, hotel, isEnabled } = params;
     const query = this.hotelRoomModel.find({ hotel });
 
