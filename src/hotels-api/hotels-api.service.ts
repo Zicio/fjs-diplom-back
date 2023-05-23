@@ -5,13 +5,17 @@ import {
   IQueryGetHotelsParams,
   IQueryGetRoomsParams,
 } from './hotels-api.controller';
-import { HotelRoom } from '../hotels/schemas/hotelRoom.schema';
+import {
+  HotelRoom,
+  HotelRoomDocument,
+} from '../hotels/schemas/hotelRoom.schema';
 import { Types } from 'mongoose';
 import { CreateHotelDto } from './dto/create-hotel.dto';
 import { Hotel } from '../hotels/schemas/hotel.schema';
 import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { HotelRoomEntity } from './hotels-api.entity';
 
 interface IRoomParams {
   description: string;
@@ -52,13 +56,28 @@ export class HotelsApiService {
   }
 
   //  2.1.6. Добавление номера
-  async createRoom(createRoomDto: CreateRoomDto): Promise<HotelRoom> {
+  async createRoom(createRoomDto: CreateRoomDto) {
     const { images, ...rest } = createRoomDto;
     const imagesDestinations: string[] = images.map(
-      (image: Express.Multer.File) => image.destination,
+      (image: Express.Multer.File) => `${image.destination}/${image.filename}`, // TODO: Проверить путь к файлам
     );
     const roomParams: IRoomParams = { images: imagesDestinations, ...rest };
-    return this.hotelsRoomsService.create(roomParams);
+    const room = (await this.hotelsRoomsService.create(
+      roomParams,
+    )) as HotelRoomDocument;
+    const hotel = (await this.hotelsService.findById(
+      roomParams.hotel,
+    )) as Hotel;
+    return new HotelRoomEntity({
+      id: room.id,
+      description: room.description,
+      images: room.images,
+      hotel: {
+        id: room.hotel,
+        title: hotel.title,
+        description: hotel.description,
+      },
+    });
   }
 
   //  2.1.7. Изменение описания номера TODO: проверить как работает, непонятная игра с файлами изображений

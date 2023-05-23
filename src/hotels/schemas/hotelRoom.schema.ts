@@ -4,7 +4,7 @@ import { Hotel } from './hotel.schema';
 
 export type HotelRoomDocument = HotelRoom & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class HotelRoom {
   @Prop({ ref: Hotel.name, required: true })
   hotel: Types.ObjectId;

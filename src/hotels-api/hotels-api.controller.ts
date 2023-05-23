@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -86,6 +87,7 @@ export class HotelsApiController {
   @UseInterceptors(
     HotelsApiIsEnabledInterceptor,
     FilesInterceptor('images', 10, multerOptions),
+    ClassSerializerInterceptor,
   )
   createRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,

@@ -31,8 +31,7 @@ export class HotelsRoomsService implements IHotelsRoomsService {
   ) {}
 
   async create(data: Partial<HotelRoom>): Promise<HotelRoom> {
-    const hotelRoom = new this.hotelRoomModel(data);
-    return hotelRoom.save();
+    return new this.hotelRoomModel(data).save();
   }
 
   async findById(id: Types.ObjectId): Promise<HotelRoom | null> {
