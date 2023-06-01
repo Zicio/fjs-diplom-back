@@ -11,11 +11,16 @@ import { AuthModule } from './auth/auth.module';
 import { UserManagementModule } from './user-management/user-management.module';
 import { HotelsApiModule } from './hotels-api/hotels-api.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: 'config/.env',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, '..', 'uploads'),
     }),
     MongooseModule.forRoot(
       process.env.MONGO_URI || 'mongodb://root:root@mongo:27017/',

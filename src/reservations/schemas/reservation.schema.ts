@@ -6,7 +6,7 @@ import { Document, Types } from 'mongoose';
 
 export type ReservationDocument = Reservation & Document;
 
-@Schema()
+@Schema({ versionKey: false })
 export class Reservation {
   @Prop({ ref: User.name, required: true })
   userId: Types.ObjectId;

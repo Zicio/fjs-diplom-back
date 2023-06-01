@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HotelsService } from '../hotels/hotels.service';
 import { HotelsRoomsService } from '../hotels/hotelsRooms.service';
 import {
+  IHotel,
   IQueryGetHotelsParams,
   IQueryGetRoomsParams,
 } from './hotels-api.controller';
@@ -11,11 +12,10 @@ import {
 } from '../hotels/schemas/hotelRoom.schema';
 import { Types } from 'mongoose';
 import { CreateHotelDto } from './dto/create-hotel.dto';
-import { Hotel } from '../hotels/schemas/hotel.schema';
+import { Hotel, HotelDocument } from '../hotels/schemas/hotel.schema';
 import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { HotelRoomEntity } from './hotels-api.entity';
 
 interface IRoomParams {
   description: string;
@@ -41,25 +41,52 @@ export class HotelsApiService {
   }
 
   // 2.1.3. Добавление гостиницы
-  async createHotel(createHotelDto: CreateHotelDto) {
-    return await this.hotelsService.create(createHotelDto);
+  async createHotel(createHotelDto: CreateHotelDto): Promise<IHotel> {
+    const { id, title, description } = (await this.hotelsService.create(
+      createHotelDto,
+    )) as HotelDocument;
+    return {
+      id,
+      title,
+      description,
+    };
   }
 
   //  2.1.4. Получение списка гостиниц
-  async getHotels(query: IQueryGetHotelsParams): Promise<Hotel[]> {
-    return this.hotelsService.search(query);
+  async getHotels(query: IQueryGetHotelsParams): Promise<IHotel[]> {
+    const hotels = (await this.hotelsService.search(query)) as HotelDocument[];
+    return hotels.map((hotel) => {
+      const { id, title, description } = hotel;
+      return {
+        id,
+        title,
+        description,
+      };
+    });
   }
 
   // 2.1.5. Изменение описания гостиницы
-  async updateHotel(id: Types.ObjectId, updateHotelDto: UpdateHotelDto) {
-    return this.hotelsService.update(id, updateHotelDto);
+  async updateHotel(
+    id: Types.ObjectId,
+    updateHotelDto: UpdateHotelDto,
+  ): Promise<IHotel> {
+    const {
+      id: hotelId,
+      title,
+      description,
+    } = (await this.hotelsService.update(id, updateHotelDto)) as HotelDocument;
+    return {
+      id: hotelId,
+      title,
+      description,
+    };
   }
 
   //  2.1.6. Добавление номера
   async createRoom(createRoomDto: CreateRoomDto) {
     const { images, ...rest } = createRoomDto;
     const imagesDestinations: string[] = images.map(
-      (image: Express.Multer.File) => `${image.destination}/${image.filename}`, // TODO: Проверить путь к файлам
+      (image: Express.Multer.File) => image.filename,
     );
     const roomParams: IRoomParams = { images: imagesDestinations, ...rest };
     const room = (await this.hotelsRoomsService.create(
@@ -68,7 +95,7 @@ export class HotelsApiService {
     const hotel = (await this.hotelsService.findById(
       roomParams.hotel,
     )) as Hotel;
-    return new HotelRoomEntity({
+    return {
       id: room.id,
       description: room.description,
       images: room.images,
@@ -77,7 +104,7 @@ export class HotelsApiService {
         title: hotel.title,
         description: hotel.description,
       },
-    });
+    };
   }
 
   //  2.1.7. Изменение описания номера TODO: проверить как работает, непонятная игра с файлами изображений

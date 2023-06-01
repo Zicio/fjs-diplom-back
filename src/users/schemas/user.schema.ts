@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 export type UserDocument = User & Document;
 type UserRole = 'client' | 'admin' | 'manager';
 
-@Schema()
+@Schema({ versionKey: false })
 export class User {
   @Prop({ required: true, unique: true })
   email: string;

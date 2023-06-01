@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -36,6 +35,12 @@ export interface IQueryGetHotelsParams {
   title: string;
 }
 
+export interface IHotel {
+  id: Types.ObjectId;
+  title: string;
+  description: string;
+}
+
 @Controller('api')
 export class HotelsApiController {
   constructor(private readonly hotelsApiService: HotelsApiService) {}
@@ -57,7 +62,7 @@ export class HotelsApiController {
   @Post('admin/hotels')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  async createHotel(@Body() createHotelDto: CreateHotelDto) {
+  async createHotel(@Body() createHotelDto: CreateHotelDto): Promise<IHotel> {
     return this.hotelsApiService.createHotel(createHotelDto);
   }
 
@@ -65,7 +70,7 @@ export class HotelsApiController {
   @Get('admin/hotels')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  async getHotels(@Query() query: IQueryGetHotelsParams) {
+  async getHotels(@Query() query: IQueryGetHotelsParams): Promise<IHotel[]> {
     return this.hotelsApiService.getHotels(query);
   }
 
@@ -76,7 +81,7 @@ export class HotelsApiController {
   async updateHotel(
     @Body() updateHotelDto: UpdateHotelDto,
     @Param('id') id: Types.ObjectId,
-  ) {
+  ): Promise<IHotel> {
     return this.hotelsApiService.updateHotel(id, updateHotelDto);
   }
 
@@ -87,7 +92,6 @@ export class HotelsApiController {
   @UseInterceptors(
     HotelsApiIsEnabledInterceptor,
     FilesInterceptor('images', 10, multerOptions),
-    ClassSerializerInterceptor,
   )
   createRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,

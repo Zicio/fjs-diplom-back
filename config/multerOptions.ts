@@ -1,13 +1,14 @@
 import multer, { diskStorage } from 'multer';
+import * as path from 'path';
 import { extname } from 'path';
+import * as uuid from 'uuid';
 
 const multerOptions: multer.Options = {
   storage: diskStorage({
-    destination: './uploads',
+    destination: path.resolve(__dirname, '..', 'uploads'),
     filename: (req, file, cb) => {
       const ext = extname(file.originalname);
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const filename = `${uniqueSuffix}-${ext}}`;
+      const filename = `${uuid.v4()}${ext}`;
       cb(null, filename);
     },
   }),

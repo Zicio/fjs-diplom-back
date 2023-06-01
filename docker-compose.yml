@@ -5,6 +5,9 @@ services:
       - PORT=4000
       - JWT_SECRET=SECRETIK
       - JWT_EXPIRES=24h
+    volumes:
+      - .:/app
+      - /app/node_modules
     ports:
       - 4000:4000
     depends_on:

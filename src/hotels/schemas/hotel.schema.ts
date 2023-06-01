@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type HotelDocument = Hotel & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class Hotel {
   @Prop({ required: true })
   title: string;
