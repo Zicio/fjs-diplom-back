@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -21,7 +22,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { HotelsApiService } from './hotels-api.service';
 import multerOptions from '../../config/multerOptions';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { HotelsApiIsEnabledInterceptor } from './hotels-api.isEnabled.interceptor';
+import { isEnabledGuard } from '../auth/isEnabled.guard';
 
 export interface IQueryGetRoomsParams {
   limit: number;
@@ -41,20 +42,38 @@ export interface IHotel {
   description: string;
 }
 
+export interface IRoom {
+  id: Types.ObjectId;
+  description: string;
+  images: string[];
+  hotel: {
+    id: Types.ObjectId;
+    title: string;
+    description?: string;
+  };
+}
+
 @Controller('api')
 export class HotelsApiController {
   constructor(private readonly hotelsApiService: HotelsApiService) {}
 
   // 2.1.1. Поиск номеров
   @Get('common/hotel-rooms')
-  @UseInterceptors(HotelsApiIsEnabledInterceptor) //  TODO: В каких методах использовать перехватчик?
-  async getRooms(@Query() query: IQueryGetRoomsParams) {
-    return this.hotelsApiService.getRooms(query);
+  @UseGuards(isEnabledGuard)
+  @Roles(Role.Client)
+  async getRooms(
+    @Query() query: IQueryGetRoomsParams,
+    @Req() request: Request,
+  ): Promise<IRoom[]> {
+    const isEnabled: boolean | undefined = (
+      request as Request & { isEnabled: boolean }
+    ).isEnabled;
+    return this.hotelsApiService.getRooms(query, isEnabled);
   }
 
   /// 2.1.2. Информация о конкретном номере
   @Get('common/hotel-rooms/:id')
-  async getRoom(@Param('id') id: Types.ObjectId) {
+  async getRoom(@Param('id') id: Types.ObjectId): Promise<IRoom> {
     return this.hotelsApiService.getRoom(id);
   }
 
@@ -89,10 +108,7 @@ export class HotelsApiController {
   @Post('admin/hotel-rooms')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  @UseInterceptors(
-    HotelsApiIsEnabledInterceptor,
-    FilesInterceptor('images', 10, multerOptions),
-  )
+  @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
   createRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Body() createRoomDto: CreateRoomDto,
@@ -105,10 +121,7 @@ export class HotelsApiController {
   @Put('admin/hotel-rooms/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  @UseInterceptors(
-    HotelsApiIsEnabledInterceptor,
-    FilesInterceptor('images', 10, multerOptions),
-  )
+  @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
   async updateRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Param('id') id: Types.ObjectId,

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HotelsService } from '../hotels/hotels.service';
 import { HotelsRoomsService } from '../hotels/hotelsRooms.service';
 import {
   IHotel,
   IQueryGetHotelsParams,
   IQueryGetRoomsParams,
+  IRoom,
 } from './hotels-api.controller';
 import {
   HotelRoom,
@@ -31,13 +32,48 @@ export class HotelsApiService {
   ) {}
 
   // 2.1.1. Поиск номеров
-  async getRooms(query: IQueryGetRoomsParams): Promise<HotelRoom[]> {
-    return this.hotelsRoomsService.search(query);
+  async getRooms(
+    query: IQueryGetRoomsParams,
+    isEnabled: boolean | undefined,
+  ): Promise<IRoom[]> {
+    const rooms = (await this.hotelsRoomsService.search({
+      isEnabled,
+      ...query,
+    })) as (HotelRoomDocument & { hotel: HotelDocument })[];
+    return rooms.map((room) => {
+      const { id, description, images, hotel } = room;
+      return {
+        id,
+        description,
+        images,
+        hotel: {
+          id: (hotel as HotelDocument).id,
+          title: (hotel as HotelDocument).title,
+        },
+      };
+    });
   }
 
   //  2.1.2. Информация о конкретном номере
-  async getRoom(id: Types.ObjectId): Promise<HotelRoom | null> {
-    return this.hotelsRoomsService.findById(id);
+  async getRoom(id: Types.ObjectId): Promise<IRoom> {
+    const {
+      id: roomId,
+      description,
+      images,
+      hotel,
+    } = (await this.hotelsRoomsService.findById(id)) as HotelRoomDocument & {
+      hotel: HotelDocument;
+    };
+    return {
+      id: roomId,
+      description,
+      images,
+      hotel: {
+        id: (hotel as HotelDocument).id,
+        description: (hotel as HotelDocument).description,
+        title: (hotel as HotelDocument).title,
+      },
+    };
   }
 
   // 2.1.3. Добавление гостиницы
@@ -85,19 +121,23 @@ export class HotelsApiService {
   //  2.1.6. Добавление номера
   async createRoom(createRoomDto: CreateRoomDto) {
     const { images, ...rest } = createRoomDto;
-    const imagesDestinations: string[] = images.map(
+    const imagesFilenames: string[] = images.map(
       (image: Express.Multer.File) => image.filename,
     );
-    const roomParams: IRoomParams = { images: imagesDestinations, ...rest };
+    const roomParams: IRoomParams = { images: imagesFilenames, ...rest };
     const room = (await this.hotelsRoomsService.create(
       roomParams,
     )) as HotelRoomDocument;
     const hotel = (await this.hotelsService.findById(
       roomParams.hotel,
     )) as Hotel;
+    if (!hotel) {
+      throw new NotFoundException('Гостиница с таким id отсутствует');
+    }
     return {
       id: room.id,
       description: room.description,
+      isEnabled: room.isEnabled,
       images: room.images,
       hotel: {
         id: room.hotel,
@@ -116,9 +156,9 @@ export class HotelsApiService {
     updateRoomDto.images = updateRoomDto.images.filter(
       (image) => typeof image === 'string',
     ) as string[];
-    const imagesInStore: string[] = images.map((image) => image.destination);
+    const imagesInStore: string[] = images.map((image) => image.filename);
     updateRoomDto.images.concat(imagesInStore);
-    updateRoomDto.images = [...new Set(updateRoomDto.images)] as string[];
+    // updateRoomDto.images = [...new Set(updateRoomDto.images)] as string[];
 
     return this.hotelsRoomsService.update(
       id,

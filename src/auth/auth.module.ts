@@ -20,6 +20,6 @@ import { RegistrationService } from './registration.service';
     }),
   ],
   controllers: [AuthController, RegistrationController],
-  providers: [AuthService, RegistrationService, JwtStrategy],
+  providers: [JwtStrategy, AuthService, RegistrationService],
 })
 export class AuthModule {}
