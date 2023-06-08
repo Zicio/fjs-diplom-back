@@ -53,10 +53,12 @@ export class UserManagementService {
         role: newUser.role,
       };
     } catch (e: unknown) {
-      if (e instanceof Error) {
+      if (e instanceof BadRequestException) {
         throw e;
       }
-      throw new InternalServerErrorException('Пользователь не был создан');
+      throw new InternalServerErrorException(
+        'Ошибка при создании пользователя',
+      );
     }
   }
 
@@ -75,7 +77,9 @@ export class UserManagementService {
       if (e instanceof Error) {
         throw e;
       }
-      throw new InternalServerErrorException('Пользователи не были получены');
+      throw new InternalServerErrorException(
+        'Ошибка при получении пользователей',
+      );
     }
   }
 }

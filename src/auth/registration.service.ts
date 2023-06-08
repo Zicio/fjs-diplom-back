@@ -39,10 +39,12 @@ export class RegistrationService {
       });
       return { id: newUser._id, email: newUser.email, name: newUser.name };
     } catch (e: unknown) {
-      if (e instanceof Error) {
+      if (e instanceof BadRequestException) {
         throw e;
       }
-      throw new InternalServerErrorException('Пользователь не был создан');
+      throw new InternalServerErrorException(
+        'Произошла ошибка при создании пользователя',
+      );
     }
   }
 }

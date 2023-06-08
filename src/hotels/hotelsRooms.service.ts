@@ -43,7 +43,6 @@ export class HotelsRoomsService implements IHotelsRoomsService {
   async search(params: ISearchRoomsParams): Promise<HotelRoom[]> {
     const { limit, offset, hotel, isEnabled } = params;
     const query = this.hotelRoomModel.find({ hotel });
-    console.log(isEnabled);
     if (isEnabled === true) {
       query.where('isEnabled').equals(isEnabled);
     }
@@ -55,6 +54,10 @@ export class HotelsRoomsService implements IHotelsRoomsService {
     id: Types.ObjectId,
     data: Partial<HotelRoom>,
   ): Promise<HotelRoom | null> {
-    return this.hotelRoomModel.findByIdAndUpdate(id, data, { new: true });
+    const query = this.hotelRoomModel.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+    query.populate('hotel', 'id title description');
+    return query;
   }
 }

@@ -46,6 +46,7 @@ export interface IRoom {
   id: Types.ObjectId;
   description: string;
   images: string[];
+  isEnabled?: boolean;
   hotel: {
     id: Types.ObjectId;
     title: string;
@@ -127,6 +128,10 @@ export class HotelsApiController {
     @Param('id') id: Types.ObjectId,
     @Body() updateRoomDto: UpdateRoomDto,
   ) {
-    return this.hotelsApiService.updateRoom(images, id, updateRoomDto);
+    const newImagesFilenames: string[] = images.map(
+      (image: Express.Multer.File) => image.filename,
+    );
+    updateRoomDto.images = updateRoomDto.images.concat(newImagesFilenames);
+    return this.hotelsApiService.updateRoom(id, updateRoomDto);
   }
 }

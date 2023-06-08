@@ -64,7 +64,7 @@ export class AuthService {
         contactPhone: user.contactPhone,
       });
     } catch (e: unknown) {
-      if (e instanceof Error) {
+      if (e instanceof UnauthorizedException) {
         throw e;
       }
       throw new InternalServerErrorException('Вход не выполнен');
