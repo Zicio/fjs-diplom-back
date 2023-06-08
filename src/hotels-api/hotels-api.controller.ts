@@ -132,7 +132,7 @@ export class HotelsApiController {
       (image: Express.Multer.File) => image.filename,
     );
     updateRoomDto.images = updateRoomDto.images
-      ? [...updateRoomDto.images, ...newImagesFilenames]
+      ? updateRoomDto.images.concat(newImagesFilenames)
       : newImagesFilenames;
     return this.hotelsApiService.updateRoom(id, updateRoomDto);
   }
