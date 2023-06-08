@@ -72,7 +72,7 @@ export class HotelsApiController {
     return this.hotelsApiService.getRooms(query, isEnabled);
   }
 
-  /// 2.1.2. Информация о конкретном номере
+  // 2.1.2. Информация о конкретном номере
   @Get('common/hotel-rooms/:id')
   async getRoom(@Param('id') id: Types.ObjectId): Promise<IRoom> {
     return this.hotelsApiService.getRoom(id);
@@ -110,7 +110,7 @@ export class HotelsApiController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
-  createRoom(
+  async createRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Body() createRoomDto: CreateRoomDto,
   ) {

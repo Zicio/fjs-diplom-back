@@ -12,6 +12,7 @@ import { UserManagementModule } from './user-management/user-management.module';
 import { HotelsApiModule } from './hotels-api/hotels-api.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ReservationsApiModule } from './reservations-api/reservations-api.module';
 import * as path from 'path';
 
 @Module({
@@ -36,6 +37,7 @@ import * as path from 'path';
     AuthModule,
     UserManagementModule,
     HotelsApiModule,
+    ReservationsApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
