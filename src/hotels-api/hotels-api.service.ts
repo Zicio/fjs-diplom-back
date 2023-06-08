@@ -182,7 +182,7 @@ export class HotelsApiService {
     }
   }
 
-  //  2.1.7. Изменение описания номера TODO: проверить как работает
+  //  2.1.7. Изменение описания номера TODO: проверить как работает при смешанном массиве images
   async updateRoom(
     id: Types.ObjectId,
     updateRoomDto: UpdateRoomDto,
@@ -203,7 +203,6 @@ export class HotelsApiService {
           images: Array<string>;
         },
       )) as HotelRoomDocument & { hotel: HotelDocument };
-      console.log(id);
       return {
         id: roomId,
         description,
