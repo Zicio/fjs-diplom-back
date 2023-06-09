@@ -6,7 +6,7 @@ import {
 import { Message, MessageDocument } from './schemas/message.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { MarkMessagesAsReadDto } from './interfaces/support-request-interface';
+import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
 
 interface CreateSupportRequestDto {
   user: Types.ObjectId;
@@ -22,7 +22,7 @@ interface ISupportRequestClientService {
 }
 
 @Injectable()
-export class SupportRequestClientService
+export class SupportRequestsClientService
   implements ISupportRequestClientService
 {
   constructor(

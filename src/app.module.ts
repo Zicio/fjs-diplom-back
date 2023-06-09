@@ -6,14 +6,13 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HotelsModule } from './hotels/hotels.module';
 import { ReservationsModule } from './reservations/reservations.module';
-import { SupportRequestModule } from './support-request/support-request.module';
 import { AuthModule } from './auth/auth.module';
 import { UserManagementModule } from './user-management/user-management.module';
 import { HotelsApiModule } from './hotels-api/hotels-api.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { ReservationsApiModule } from './reservations-api/reservations-api.module';
 import * as path from 'path';
+import { SupportRequestsModule } from './support-requests/support-requests.module';
 
 @Module({
   imports: [
@@ -33,11 +32,12 @@ import * as path from 'path';
     UsersModule,
     HotelsModule,
     ReservationsModule,
-    SupportRequestModule,
+    SupportRequestsModule,
     AuthModule,
     UserManagementModule,
     HotelsApiModule,
-    ReservationsApiModule,
+    // ReservationsApiModule,
+    // SupportRequestsApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

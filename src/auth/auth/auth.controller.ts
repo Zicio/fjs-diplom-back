@@ -1,9 +1,9 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from '../dto/login.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { JwtUnauthGuard } from './jwt-unauth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { JwtUnauthGuard } from '../guards/jwt-unauth.guard';
 
 @Controller('api/auth')
 export class AuthController {
@@ -11,7 +11,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(JwtUnauthGuard)
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<void> {
     return this.authService.login(loginDto, res);
   }
 

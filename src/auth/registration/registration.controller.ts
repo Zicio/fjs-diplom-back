@@ -1,7 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { RegistrationDto } from './dto/registration.dto';
+import { RegistrationDto } from '../dto/registration.dto';
 import { RegistrationService } from './registration.service';
-import { JwtUnauthGuard } from './jwt-unauth.guard';
+import { JwtUnauthGuard } from '../guards/jwt-unauth.guard';
+import { RegistrationResponse } from './interfaces';
 
 @Controller('api/client')
 @UseGuards(JwtUnauthGuard)
@@ -9,7 +10,9 @@ export class RegistrationController {
   constructor(private readonly registrationService: RegistrationService) {}
 
   @Post('register')
-  async register(@Body() registrationDto: RegistrationDto) {
+  async register(
+    @Body() registrationDto: RegistrationDto,
+  ): Promise<RegistrationResponse> {
     return this.registrationService.register(registrationDto);
   }
 }

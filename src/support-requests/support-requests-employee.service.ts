@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MarkMessagesAsReadDto } from './interfaces/support-request-interface';
+import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
 import { Model, Types } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,7 +8,7 @@ import {
   SupportRequestDocument,
 } from './schemas/support-request.schema';
 
-interface ISupportRequestEmployeeService {
+export interface ISupportRequestEmployeeService {
   markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void>;
 
   getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]>;
@@ -17,7 +17,7 @@ interface ISupportRequestEmployeeService {
 }
 
 @Injectable()
-export class SupportRequestEmployeeService
+export class SupportRequestsEmployeeService
   implements ISupportRequestEmployeeService
 {
   constructor(

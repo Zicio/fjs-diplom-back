@@ -3,16 +3,11 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { RegistrationDto } from './dto/registration.dto';
+import { UsersService } from '../../users/users.service';
+import { RegistrationDto } from '../dto/registration.dto';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../users/schemas/user.schema';
-
-export interface RegistrationResponse {
-  id: string;
-  email: string;
-  name: string;
-}
+import { UserDocument } from '../../users/schemas/user.schema';
+import { RegistrationResponse } from './interfaces';
 
 @Injectable()
 export class RegistrationService {

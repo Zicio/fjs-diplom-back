@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role, ROLES_KEY } from './roles.decorator';
+import { Role, ROLES_KEY } from '../roles.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,6 +23,7 @@ export class RolesGuard implements CanActivate {
     if (!requiredRole.includes(user.role)) {
       throw new ForbiddenException('Отсутствуют необходимые права доступа');
     }
+
     return true;
   }
 }

@@ -3,11 +3,11 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/users.service';
 import { Types } from 'mongoose';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from '../dto/login.dto';
 import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../users/schemas/user.schema';
+import { UserDocument } from '../../users/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 

@@ -34,7 +34,7 @@ interface ISupportRequestService {
 }
 
 @Injectable()
-export class SupportRequestService implements ISupportRequestService {
+export class SupportRequestsService implements ISupportRequestService {
   constructor(
     @InjectModel(SupportRequest.name)
     private supportRequestModel: Model<SupportRequestDocument>,
