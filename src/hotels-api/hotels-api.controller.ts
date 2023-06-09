@@ -113,7 +113,7 @@ export class HotelsApiController {
   async createRoom(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Body() createRoomDto: CreateRoomDto,
-  ) {
+  ): Promise<IRoom> {
     createRoomDto.images = images;
     return this.hotelsApiService.createRoom(createRoomDto);
   }
@@ -127,7 +127,7 @@ export class HotelsApiController {
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Param('id') id: Types.ObjectId,
     @Body() updateRoomDto: UpdateRoomDto,
-  ) {
+  ): Promise<IRoom | null> {
     const newImagesFilenames: string[] = images.map(
       (image: Express.Multer.File) => image.filename,
     );

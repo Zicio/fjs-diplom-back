@@ -8,10 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ReservationsApiService } from './reservations-api.service';
-import { CreateReservationDto } from './dto/create-reservation.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
+import { CreateReservationDto } from './dto/create-reservation.dto';
 import { Types } from 'mongoose';
 
 export interface IReservation {
@@ -37,10 +37,10 @@ export class ReservationsApiController {
   @Post('client/reservations')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Client)
-  async createReservation(
+  async addReservation(
     @Body() createReservationDto: CreateReservationDto,
   ): Promise<IReservation> {
-    return this.reservationsApiService.createReservation(createReservationDto);
+    return this.reservationsApiService.addReservation(createReservationDto);
   }
 
   //  2.2.2. Список броней текущего пользователя
