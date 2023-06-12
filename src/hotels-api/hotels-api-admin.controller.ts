@@ -10,19 +10,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Role, Roles } from '../../auth/roles.decorator';
-import { CreateHotelDto } from '../dto/create-hotel.dto';
-import { UpdateRoomDto } from '../dto/update-room.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/roles.decorator';
+import { CreateHotelDto } from './dto/create-hotel.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import multerOptions from '../../../config/multerOptions';
-import { CreateRoomDto } from '../dto/create-room.dto';
-import { UpdateHotelDto } from '../dto/update-hotel.dto';
+import multerOptions from '../../config/multerOptions';
+import { CreateRoomDto } from './dto/create-room.dto';
+import { UpdateHotelDto } from './dto/update-hotel.dto';
 import { Types } from 'mongoose';
-
-import { HotelsApiAdminService } from './hotels-api-admin.service';
-import { IRoom } from '../shared-interfaces/interfaces';
+import { IRoom } from './interfaces';
+import { HotelsApiService } from './hotels-api.service';
 
 export interface IQueryGetHotelsParams {
   limit: number;
@@ -40,18 +39,18 @@ export interface IHotel {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles([Role.Admin])
 export class HotelsApiAdminController {
-  constructor(private readonly hotelsApiAdminService: HotelsApiAdminService) {}
+  constructor(private readonly hotelsApiService: HotelsApiService) {}
 
   // 2.1.3. Добавление гостиницы
   @Post('hotels')
   async createHotel(@Body() createHotelDto: CreateHotelDto): Promise<IHotel> {
-    return this.hotelsApiAdminService.createHotel(createHotelDto);
+    return this.hotelsApiService.createHotel(createHotelDto);
   }
 
   //  2.1.4. Получение списка гостиниц
   @Get('hotels')
   async getHotels(@Query() query: IQueryGetHotelsParams): Promise<IHotel[]> {
-    return this.hotelsApiAdminService.getHotels(query);
+    return this.hotelsApiService.getHotels(query);
   }
 
   // 2.1.5. Изменение описания гостиницы
@@ -60,7 +59,7 @@ export class HotelsApiAdminController {
     @Body() updateHotelDto: UpdateHotelDto,
     @Param('id') id: Types.ObjectId,
   ): Promise<IHotel> {
-    return this.hotelsApiAdminService.updateHotel(id, updateHotelDto);
+    return this.hotelsApiService.updateHotel(id, updateHotelDto);
   }
 
   //  2.1.6. Добавление номера
@@ -71,7 +70,7 @@ export class HotelsApiAdminController {
     @Body() createRoomDto: CreateRoomDto,
   ): Promise<IRoom> {
     createRoomDto.images = images;
-    return this.hotelsApiAdminService.createRoom(createRoomDto);
+    return this.hotelsApiService.createRoom(createRoomDto);
   }
 
   //  2.1.7. Изменение описания номера
@@ -88,6 +87,6 @@ export class HotelsApiAdminController {
     updateRoomDto.images = updateRoomDto.images
       ? updateRoomDto.images.concat(newImagesFilenames)
       : newImagesFilenames;
-    return this.hotelsApiAdminService.updateRoom(id, updateRoomDto);
+    return this.hotelsApiService.updateRoom(id, updateRoomDto);
   }
 }

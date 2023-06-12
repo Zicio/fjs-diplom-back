@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { RegistrationDto } from '../dto/registration.dto';
-import { RegistrationService } from './registration.service';
-import { JwtUnauthGuard } from '../guards/jwt-unauth.guard';
-import { RegistrationResponse } from './interfaces';
+import { RegistrationDto } from './dto/registration.dto';
+import { RegistrationService } from './registration/registration.service';
+import { JwtUnauthGuard } from './guards/jwt-unauth.guard';
+import { RegistrationResponse } from './registration/interfaces';
 
 @Controller('api/client')
 @UseGuards(JwtUnauthGuard)

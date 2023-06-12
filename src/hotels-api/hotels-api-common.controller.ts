@@ -1,10 +1,10 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { isEnabledGuard } from 'src/auth/guards/isEnabled.guard';
-import { Role, Roles } from '../../auth/roles.decorator';
+import { Role, Roles } from '../auth/roles.decorator';
 import { Types } from 'mongoose';
-import { HotelsApiCommonService } from './hotels-api-common.service';
-import { IRoom } from '../shared-interfaces/interfaces';
-import { IQueryGetRoomsParams } from './interfaces';
+import { HotelsApiCommonService } from './common/hotels-api-common.service';
+import { IRoom } from './interfaces';
+import { IQueryGetRoomsParams } from './common/interfaces';
 
 @Controller('api/common')
 export class HotelsApiCommonController {

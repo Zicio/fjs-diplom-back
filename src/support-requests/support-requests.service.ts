@@ -16,6 +16,8 @@ interface SendMessageDto {
 interface GetChatListParams {
   user: Types.ObjectId | null;
   isActive: boolean;
+  limit: number;
+  offset: number;
 }
 
 interface ISupportRequestService {
@@ -42,10 +44,10 @@ export class SupportRequestsService implements ISupportRequestService {
     private messageModel: Model<MessageDocument>,
   ) {}
 
-  async findSupportRequests(
-    params: GetChatListParams,
-  ): Promise<SupportRequest[]> {
-    return this.supportRequestModel.find({ params });
+  async findSupportRequests(params: GetChatListParams) {
+    return this.supportRequestModel
+      .find({ params })
+      .populate('user', 'name email contactPhone');
   }
 
   async sendMessage(data: SendMessageDto): Promise<Message> {

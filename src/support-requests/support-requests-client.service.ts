@@ -7,11 +7,7 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
-
-interface CreateSupportRequestDto {
-  user: Types.ObjectId;
-  text: string;
-}
+import { CreateSupportRequestDto } from '../support-requests-api/dto/createSupportRequest.dto';
 
 interface ISupportRequestClientService {
   createSupportRequest(data: CreateSupportRequestDto): Promise<SupportRequest>;
@@ -87,7 +83,7 @@ export class SupportRequestsClientService
       return messages.filter((message: MessageDocument) => {
         return (
           !message.readAt && message.author !== supportRequestToReceipt.user
-        ); // TODO в задании сказано возврат именно количества сообщений, но в интерфейсе идет возврат массива сообщении
+        );
       });
     }
   }

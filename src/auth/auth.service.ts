@@ -1,15 +1,18 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
-import { Types } from 'mongoose';
-import { LoginDto } from '../dto/login.dto';
-import * as bcrypt from 'bcryptjs';
-import { UserDocument } from '../../users/schemas/user.schema';
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { Types } from 'mongoose';
+import { UserDocument } from '../users/schemas/user.schema';
+import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
+import * as bcrypt from 'bcryptjs';
+import { RegistrationDto } from './dto/registration.dto';
+import { RegistrationResponse } from './interfaces';
 
 @Injectable()
 export class AuthService {
@@ -74,5 +77,35 @@ export class AuthService {
   async logout(res: Response): Promise<void> {
     res.clearCookie('access_token');
     res.status(204).end();
+  }
+
+  async register(
+    registrationDto: RegistrationDto,
+  ): Promise<RegistrationResponse> {
+    try {
+      const { password, email, ...rest } = registrationDto;
+      const user: UserDocument | null = await this.usersService.findByEmail(
+        email,
+      );
+      if (user) {
+        throw new BadRequestException(
+          'Пользователь с таким email уже существует',
+        );
+      }
+      const passwordHash: string = await bcrypt.hash(password, 10);
+      const newUser: UserDocument = await this.usersService.create({
+        passwordHash,
+        email,
+        ...rest,
+      });
+      return { id: newUser._id, email: newUser.email, name: newUser.name };
+    } catch (e: unknown) {
+      if (e instanceof BadRequestException) {
+        throw e;
+      }
+      throw new InternalServerErrorException(
+        'Произошла ошибка при создании пользователя',
+      );
+    }
   }
 }
