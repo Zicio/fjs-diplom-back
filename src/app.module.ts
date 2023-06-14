@@ -13,6 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 import { SupportRequestsModule } from './support-requests/support-requests.module';
+import { SupportRequestsApiModule } from './support-requests-api/support-requests-api.module';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { SupportRequestsModule } from './support-requests/support-requests.modul
     UserManagementModule,
     HotelsApiModule,
     // ReservationsApiModule,
-    // SupportRequestsApiModule,
+    SupportRequestsApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

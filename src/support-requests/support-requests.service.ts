@@ -6,6 +6,7 @@ import {
 } from './schemas/support-request.schema';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { UserDocument } from '../users/schemas/user.schema';
 
 interface SendMessageDto {
   author: Types.ObjectId;
@@ -21,11 +22,16 @@ interface GetChatListParams {
 }
 
 interface ISupportRequestService {
+  getSupportRequestById(id: Types.ObjectId): Promise<SupportRequest | null>;
+
   findSupportRequests(params: GetChatListParams): Promise<SupportRequest[]>;
 
   sendMessage(data: SendMessageDto): Promise<Message>;
 
-  getMessages(supportRequest: Types.ObjectId): Promise<Message[]>;
+  getMessages(
+    supportRequest: Types.ObjectId,
+    user: UserDocument,
+  ): Promise<Message[]>;
 
   subscribe(
     handler: (
@@ -44,10 +50,27 @@ export class SupportRequestsService implements ISupportRequestService {
     private messageModel: Model<MessageDocument>,
   ) {}
 
+  //  Метод добавлен для работы SupportRequestAccessGuard
+  async getSupportRequestById(
+    id: Types.ObjectId,
+  ): Promise<SupportRequest | null> {
+    return this.supportRequestModel.findById(id);
+  }
+
   async findSupportRequests(params: GetChatListParams) {
+    const { user, isActive, limit, offset } = params;
+    if (user) {
+      return this.supportRequestModel
+        .find({ user, isActive })
+        .populate('user', 'name email contactPhone')
+        .limit(limit)
+        .skip(offset);
+    }
     return this.supportRequestModel
-      .find({ params })
-      .populate('user', 'name email contactPhone');
+      .find({ isActive })
+      .populate('user', 'name email contactPhone')
+      .limit(limit)
+      .skip(offset);
   }
 
   async sendMessage(data: SendMessageDto): Promise<Message> {
@@ -61,7 +84,9 @@ export class SupportRequestsService implements ISupportRequestService {
   }
 
   async getMessages(supportRequest: Types.ObjectId): Promise<Message[]> {
-    return this.messageModel.find({ supportRequest });
+    const supportRequestData = await this.getSupportRequestById(supportRequest);
+    console.log(supportRequestData);
+    return (supportRequestData as SupportRequestDocument).messages;
   }
 
   subscribe(

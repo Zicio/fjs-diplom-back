@@ -16,14 +16,14 @@ import { Request } from 'express';
 import { UserDocument } from '../users/schemas/user.schema';
 import { SupportRequestsApiService } from './support-requests-api.service';
 
-@Controller('api/client')
+@Controller('api/client/support-requests')
 export class SupportRequestsClientApiController {
   constructor(
-    private readonly supportRequestsClientApiService: SupportRequestsApiService,
+    private readonly supportRequestsApiService: SupportRequestsApiService,
   ) {}
 
   //  2.5.1. Создание обращения в поддержку
-  @Post('support-requests')
+  @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.Client])
   async createSupportRequest(
@@ -32,22 +32,22 @@ export class SupportRequestsClientApiController {
   ): Promise<ISupportRequest> {
     // В задании тип ответа стоит !!!массив!!! обращений. Почему?
     createSupportRequestDto.user = (req.user as UserDocument).id;
-    return this.supportRequestsClientApiService.createSupportRequest(
+    return this.supportRequestsApiService.createSupportRequest(
       createSupportRequestDto,
     );
   }
 
   // 2.5.2. Получение списка обращений в поддержку для клиента
-  @Get('support-requests')
+  @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.Client])
   async getSupportRequests(
     @Query() query: IQueryGetSupportRequestsParams,
     @Req() req: Request,
   ): Promise<ISupportRequest[]> {
-    return this.supportRequestsClientApiService.getSupportRequests(
+    return this.supportRequestsApiService.getSupportRequests(
       query,
-      req.user as UserDocument,
+      (req.user as UserDocument).id,
     );
   }
 }
