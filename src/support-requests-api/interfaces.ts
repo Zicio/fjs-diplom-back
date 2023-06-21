@@ -18,7 +18,7 @@ export interface IMessage {
   id: Types.ObjectId;
   createdAt: string;
   text: string;
-  readAt: string;
+  readAt: string | null; // TODO: выяснить как изменяется параметр
   author: IAuthor;
 }
 

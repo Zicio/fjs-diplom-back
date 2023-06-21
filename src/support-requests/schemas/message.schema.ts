@@ -4,7 +4,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type MessageDocument = Message & Document;
 
-@Schema()
+@Schema({ versionKey: false })
 export class Message {
   @Prop({ ref: User.name, required: true })
   author: Types.ObjectId;

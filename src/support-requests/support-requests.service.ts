@@ -8,13 +8,13 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
 
-interface SendMessageDto {
+interface ISendMessageDto {
   author: Types.ObjectId;
   supportRequest: Types.ObjectId;
   text: string;
 }
 
-interface GetChatListParams {
+interface IGetChatListParams {
   user: Types.ObjectId | null;
   isActive: boolean;
   limit: number;
@@ -24,9 +24,9 @@ interface GetChatListParams {
 interface ISupportRequestService {
   getSupportRequestById(id: Types.ObjectId): Promise<SupportRequest | null>;
 
-  findSupportRequests(params: GetChatListParams): Promise<SupportRequest[]>;
+  findSupportRequests(params: IGetChatListParams): Promise<SupportRequest[]>;
 
-  sendMessage(data: SendMessageDto): Promise<Message>;
+  sendMessage(data: ISendMessageDto): Promise<Message>;
 
   getMessages(
     supportRequest: Types.ObjectId,
@@ -57,7 +57,7 @@ export class SupportRequestsService implements ISupportRequestService {
     return this.supportRequestModel.findById(id);
   }
 
-  async findSupportRequests(params: GetChatListParams) {
+  async findSupportRequests(params: IGetChatListParams) {
     const { user, isActive, limit, offset } = params;
     if (user) {
       return this.supportRequestModel
@@ -73,10 +73,10 @@ export class SupportRequestsService implements ISupportRequestService {
       .skip(offset);
   }
 
-  async sendMessage(data: SendMessageDto): Promise<Message> {
+  async sendMessage(data: ISendMessageDto): Promise<Message> {
     const message = new this.messageModel(data);
     await message.save();
-    this.supportRequestModel.updateOne(
+    await this.supportRequestModel.updateOne(
       { _id: data.supportRequest },
       { $push: { messages: message } },
     );
@@ -85,7 +85,6 @@ export class SupportRequestsService implements ISupportRequestService {
 
   async getMessages(supportRequest: Types.ObjectId): Promise<Message[]> {
     const supportRequestData = await this.getSupportRequestById(supportRequest);
-    console.log(supportRequestData);
     return (supportRequestData as SupportRequestDocument).messages;
   }
 

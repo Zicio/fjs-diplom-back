@@ -1,15 +1,22 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SupportRequestsClientService } from '../support-requests/support-requests-client.service';
 import { CreateSupportRequestDto } from './dto/createSupportRequest.dto';
-import { IMessage, IQueryGetSupportRequestsParams, ISupportRequest } from './interfaces';
+import {
+  IMessage,
+  IQueryGetSupportRequestsParams,
+  ISupportRequest,
+} from './interfaces';
 import { SupportRequestDocument } from '../support-requests/schemas/support-request.schema';
 import { SupportRequestsService } from '../support-requests/support-requests.service';
 import { SupportRequestsEmployeeService } from '../support-requests/support-requests-employee.service';
 import { UserDocument } from '../users/schemas/user.schema';
-import { Message, MessageDocument } from '../support-requests/schemas/message.schema';
+import {
+  Message,
+  MessageDocument,
+} from '../support-requests/schemas/message.schema';
 import { Types } from 'mongoose';
 import { UsersService } from '../users/users.service';
-import { CreateMessageDto } from './dto/createMessage.dto';
+import { SendMessageDto } from './dto/sendMessage.dto';
 
 @Injectable()
 export class SupportRequestsApiService {
@@ -18,23 +25,38 @@ export class SupportRequestsApiService {
     private readonly supportRequestsClientService: SupportRequestsClientService,
     private readonly supportRequestsEmployeeService: SupportRequestsEmployeeService,
     private readonly userService: UsersService,
-  ) {
-  }
+  ) {}
 
   //  2.5.1. Создание обращения в поддержку
   async createSupportRequest(
     createSupportRequestDto: CreateSupportRequestDto,
   ): Promise<ISupportRequest> {
     try {
-      const { id, createdAt, isActive } =
-        (await this.supportRequestsClientService.createSupportRequest(
-          createSupportRequestDto,
-        )) as SupportRequestDocument & { createdAt: string };
+      const { text, user } = createSupportRequestDto;
+
+      const {
+        id: supportRequestId,
+        createdAt,
+        isActive,
+      } = (await this.supportRequestsClientService.createSupportRequest(
+        user,
+      )) as SupportRequestDocument & { createdAt: string };
+
+      await this.supportRequestsService.sendMessage({
+        author: user,
+        supportRequest: supportRequestId,
+        text,
+      });
+
       const unreadMessages: Message[] =
-        await this.supportRequestsClientService.getUnreadCount(id);
+        await this.supportRequestsClientService.getUnreadCount(
+          supportRequestId,
+        );
+
       const hasNewMessages = !!unreadMessages.length;
+
       return {
-        id,
+        id: supportRequestId,
         createdAt,
         isActive,
         hasNewMessages,
@@ -97,24 +119,20 @@ export class SupportRequestsApiService {
   //  2.5.4. Получение истории сообщений из обращения в техподдержку
   async getMessages(supportRequestId: Types.ObjectId): Promise<IMessage[]> {
     try {
-      const messages: Message[] = await this.supportRequestsService.getMessages(supportRequestId);
-      if (!messages) {
-        throw new InternalServerErrorException('Ошибка при получении сообщений');
-      }
+      const messages: Message[] = await this.supportRequestsService.getMessages(
+        supportRequestId,
+      );
       const messagesPromises: Promise<IMessage>[] = messages.map(
         async (message: MessageDocument) => {
           const { id: messageId, sentAt, text, readAt, author } = message;
           const { id: authorId, name } = (await this.userService.findById(
             author,
           )) as UserDocument;
-          if (!authorId) {
-            throw new InternalServerErrorException('Ошибка при обработке сообщений');
-          }
           return {
             id: messageId,
             createdAt: sentAt.toString(),
             text,
-            readAt: readAt.toString(),
+            readAt: readAt?.toString() || null,
             author: {
               id: authorId,
               name,
@@ -124,19 +142,17 @@ export class SupportRequestsApiService {
       );
       return Promise.all(messagesPromises);
     } catch (e) {
-      throw e;
+      throw new InternalServerErrorException('Ошибка получения сообщений');
     }
   }
 
   //  2.5.5. Отправка сообщения
-  async sendMessage(supportRequestId: Types.ObjectId, createMessageDto: CreateMessageDto) {
+  async sendMessage(sendMessageDto: SendMessageDto): Promise<IMessage[]> {
     try {
-      const { author, text } = createMessageDto;
-      const supportRequest = await this.supportRequestsService.getSupportRequestById(supportRequestId);
-      if (!supportRequest) {
-        throw new InternalServerErrorException('Сообщения не найдены');
-      }
-      
+      await this.supportRequestsService.sendMessage(sendMessageDto);
+      return this.getMessages(sendMessageDto.supportRequest);
+    } catch (e) {
+      throw new InternalServerErrorException('Сообщение не отправлено');
     }
   }
 }

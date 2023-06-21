@@ -7,10 +7,10 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
-import { CreateSupportRequestDto } from '../support-requests-api/dto/createSupportRequest.dto';
 
 interface ISupportRequestClientService {
-  createSupportRequest(data: CreateSupportRequestDto): Promise<SupportRequest>;
+  //  в аргументах createSupportRequest убрал text, так как добавление сообщения производится через SupportRequestService.sendMessage
+  createSupportRequest(user: Types.ObjectId): Promise<SupportRequest>;
 
   markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void>;
 
@@ -28,10 +28,8 @@ export class SupportRequestsClientService
     private messageModel: Model<MessageDocument>,
   ) {}
 
-  async createSupportRequest(
-    data: CreateSupportRequestDto,
-  ): Promise<SupportRequest> {
-    const supportRequest = new this.supportRequestModel(data);
+  async createSupportRequest(user: Types.ObjectId): Promise<SupportRequest> {
+    const supportRequest = new this.supportRequestModel({ user });
     return supportRequest.save();
   }
 

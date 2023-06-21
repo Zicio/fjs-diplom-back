@@ -14,7 +14,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 import { Types } from 'mongoose';
 import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
-import { CreateMessageDto } from './dto/createMessage.dto';
+import { SendMessageDto } from './dto/sendMessage.dto';
 import { UserDocument } from '../users/schemas/user.schema';
 
 @Controller('api/common/support-requests')
@@ -34,16 +34,17 @@ export class SupportRequestsCommonApiController {
   }
 
   // 2.5.5. Отправка сообщения
-  @Post('support-requests/:id/messages')
+  @Post(':id/messages')
   @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   @Roles([Role.Manager, Role.Client])
   async sendMessage(
     @Param('id') id: Types.ObjectId,
-    @Body() createMessageDto: CreateMessageDto,
+    @Body() sendMessageDto: SendMessageDto,
     @Req() req: Request & { user: UserDocument },
-  ): Promise<IMessage> {
-    createMessageDto.author = req.user.id;
-    return this.supportRequestsApiService.sendMessage(id, createMessageDto);
+  ): Promise<IMessage[]> {
+    sendMessageDto.author = req.user.id;
+    sendMessageDto.supportRequest = id;
+    return this.supportRequestsApiService.sendMessage(sendMessageDto);
   }
 
   //
