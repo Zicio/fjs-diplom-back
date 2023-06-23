@@ -1,7 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SupportRequestsClientService } from '../support-requests/support-requests-client.service';
 import { CreateSupportRequestDto } from './dto/createSupportRequest.dto';
-import { IMessage, ISupportRequest } from './interfaces';
+import {
+  IMarkMessageAsReadResponse,
+  IMessage,
+  ISupportRequest,
+} from './interfaces';
 import { SupportRequestDocument } from '../support-requests/schemas/support-request.schema';
 import { SupportRequestsService } from '../support-requests/support-requests.service';
 import { SupportRequestsManagerService } from '../support-requests/support-requests-manager.service';
@@ -14,6 +18,8 @@ import { Types } from 'mongoose';
 import { UsersService } from '../users/users.service';
 import { SendMessageDto } from './dto/sendMessage.dto';
 import { GetSupportRequestsDto } from './dto/getSupportRequests.dto';
+import { MarkMessageAsReadDto } from './dto/markMessageAsRead.dto';
+import { Role } from '../auth/roles.decorator';
 
 @Injectable()
 export class SupportRequestsApiService {
@@ -150,6 +156,21 @@ export class SupportRequestsApiService {
       return this.getMessages(sendMessageDto.supportRequest);
     } catch (e) {
       throw new InternalServerErrorException('Сообщение не отправлено');
+    }
+  }
+
+  //  2.5.6. Отправка события, что сообщения прочитаны
+  async markMessagesAsRead(
+    markMessagesAsReadDto: MarkMessageAsReadDto,
+  ): Promise<IMarkMessageAsReadResponse> {
+    try {
+      const { role, ...rest } = markMessagesAsReadDto;
+      role === Role.Client
+        ? await this.supportRequestsClientService.markMessagesAsRead(rest)
+        : await this.supportRequestsManagerService.markMessagesAsRead(rest);
+      return { success: true };
+    } catch (e) {
+      throw new InternalServerErrorException('Ошибка в отметке сообщений');
     }
   }
 }

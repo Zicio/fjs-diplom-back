@@ -13,7 +13,7 @@ export class SupportRequest {
   @Prop({ required: true })
   messages: Message[];
 
-  @Prop({ default: true }) // default в задании не указан
+  @Prop({ default: true })
   isActive: boolean;
 }
 

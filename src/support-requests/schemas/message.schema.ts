@@ -9,13 +9,13 @@ export class Message {
   @Prop({ ref: User.name, required: true })
   author: Types.ObjectId;
 
-  @Prop({ required: true, default: new Date() }) // TODO: check default
+  @Prop({ required: true, default: new Date() }) // TODO: на фронте обрабатывать дату с помощью moment-timezone
   sentAt: Date;
 
   @Prop({ required: true })
   text: string;
 
-  @Prop()
+  @Prop({ default: null })
   readAt: Date;
 }
 

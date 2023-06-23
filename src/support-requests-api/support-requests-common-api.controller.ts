@@ -7,7 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { IMessage } from './interfaces';
+import { IMarkMessageAsReadResponse, IMessage } from './interfaces';
 import { SupportRequestsApiService } from './support-requests-api.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -16,6 +16,7 @@ import { Types } from 'mongoose';
 import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
 import { UserDocument } from '../users/schemas/user.schema';
 import { SendMessageDto } from './dto/sendMessage.dto';
+import { MarkMessageAsReadDto } from './dto/markMessageAsRead.dto';
 
 @Controller('api/common/support-requests')
 export class SupportRequestsCommonApiController {
@@ -52,23 +53,24 @@ export class SupportRequestsCommonApiController {
   }
 
   //  2.5.6. Отправка события, что сообщения прочитаны
-  // @Post(':id/messages/read')
-  // @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
-  // @Roles([Role.Manager, Role.Client])
-  // async markMessagesAsRead(
-  //   @Param('id') supportRequestId: Types.ObjectId,
-  //   @Req() req: Request & { user: UserDocument },
-  //   @Body() body: { createdBefore: Date },
-  // ): Promise<{ success: boolean }> {
-  //   const markMessagesAsReadDto = new MarkMessageAsReadDto(
-  //     req.user.id,
-  //     supportRequestId,
-  //     body.createdBefore,
-  //   );
-  //   return this.supportRequestsApiService.markMessagesAsRead(
-  //     markMessagesAsReadDto,
-  //   );
-  // }
+  @Post(':id/messages/read')
+  @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
+  @Roles([Role.Manager, Role.Client])
+  async markMessagesAsRead(
+    @Param('id') supportRequestId: Types.ObjectId,
+    @Req() req: Request & { user: UserDocument },
+    @Body() body: { createdBefore: string },
+  ): Promise<IMarkMessageAsReadResponse> {
+    const markMessagesAsReadDto = new MarkMessageAsReadDto(
+      req.user.id,
+      req.user.role,
+      supportRequestId,
+      new Date(body.createdBefore),
+    );
+    return this.supportRequestsApiService.markMessagesAsRead(
+      markMessagesAsReadDto,
+    );
+  }
 
   //  2.5.7. Подписка на сообщения из чата техподдержки
 }

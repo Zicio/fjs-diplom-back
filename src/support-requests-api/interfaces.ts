@@ -18,7 +18,7 @@ export interface IMessage {
   id: Types.ObjectId;
   createdAt: string;
   text: string;
-  readAt: string | null; // TODO: выяснить как изменяется параметр
+  readAt: string | null;
   author: IAuthor;
 }
 
@@ -32,4 +32,8 @@ export interface IClient {
   name: string;
   email: string;
   contactPhone: string;
+}
+
+export interface IMarkMessageAsReadResponse {
+  success: boolean;
 }

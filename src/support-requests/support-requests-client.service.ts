@@ -6,7 +6,7 @@ import {
 import { Message, MessageDocument } from './schemas/message.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { IMarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
+import { IMarkMessagesAsReadDto } from './interfaces';
 
 interface ISupportRequestClientService {
   //  в аргументах createSupportRequest убрал text, так как добавление сообщения производится через SupportRequestService.sendMessage
@@ -45,6 +45,9 @@ export class SupportRequestsClientService
       } else {
         const messages = supportRequestToUpdate.messages;
         const messagesToMark = messages.filter((message: MessageDocument) => {
+          console.log(message.author !== user);
+          console.log(!message.readAt);
+          console.log(message.sentAt < createdBefore);
           return (
             message.author !== user &&
             !message.readAt &&
@@ -52,11 +55,14 @@ export class SupportRequestsClientService
           );
         });
 
+        console.log({ messagesToMark });
+
         const messageIdToMark: Types.ObjectId[] = messagesToMark.map(
           (message: MessageDocument) => {
             return message._id;
           },
         );
+        console.log({ messageIdToMark });
 
         await this.messageModel.updateMany(
           { _id: { $in: messageIdToMark } },

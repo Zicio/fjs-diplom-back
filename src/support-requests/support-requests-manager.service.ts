@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IMarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
+import { IMarkMessagesAsReadDto } from './interfaces';
 import { Model, Types } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
