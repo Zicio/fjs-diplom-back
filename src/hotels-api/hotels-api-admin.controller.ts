@@ -13,27 +13,16 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
-import { CreateHotelDto } from './dto/create-hotel.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { CreateHotelDto } from './dto/createHotel.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import multerOptions from '../../config/multerOptions';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateHotelDto } from './dto/update-hotel.dto';
+import { CreateRoomDto } from './dto/createRoom.dto';
+import { UpdateHotelDto } from './dto/updateHotel.dto';
 import { Types } from 'mongoose';
-import { IRoom } from './interfaces';
+import { IGetHotelsBody, IHotel, IRoom, IUpdateRoomBody } from './interfaces';
 import { HotelsApiService } from './hotels-api.service';
-
-export interface IQueryGetHotelsParams {
-  limit: number;
-  offset: number;
-  title: string;
-}
-
-export interface IHotel {
-  id: Types.ObjectId;
-  title: string;
-  description: string;
-}
+import { GetHotelsDto } from './dto/getHotels.dto';
+import { UpdateRoomDto } from './dto/updateRoom.dto';
 
 @Controller('api/admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -49,17 +38,22 @@ export class HotelsApiAdminController {
 
   //  2.1.4. Получение списка гостиниц
   @Get('hotels')
-  async getHotels(@Query() query: IQueryGetHotelsParams): Promise<IHotel[]> {
-    return this.hotelsApiService.getHotels(query);
+  async getHotels(@Query() getHotelsDto: GetHotelsDto): Promise<IHotel[]> {
+    return this.hotelsApiService.getHotels(getHotelsDto);
   }
 
   // 2.1.5. Изменение описания гостиницы
   @Put('hotels/:id')
   async updateHotel(
-    @Body() updateHotelDto: UpdateHotelDto,
-    @Param('id') id: Types.ObjectId,
+    @Body() body: IGetHotelsBody,
+    @Param('id') hotelId: Types.ObjectId,
   ): Promise<IHotel> {
-    return this.hotelsApiService.updateHotel(id, updateHotelDto);
+    const updateHotelDto = new UpdateHotelDto(
+      body.title,
+      body.description,
+      hotelId,
+    );
+    return this.hotelsApiService.updateHotel(updateHotelDto);
   }
 
   //  2.1.6. Добавление номера
@@ -77,16 +71,18 @@ export class HotelsApiAdminController {
   @Put('hotel-rooms/:id')
   @UseInterceptors(FilesInterceptor('images', 10, multerOptions))
   async updateRoom(
-    @UploadedFiles() images: Array<Express.Multer.File>,
-    @Param('id') id: Types.ObjectId,
-    @Body() updateRoomDto: UpdateRoomDto,
+    @UploadedFiles() uploadImages: Array<Express.Multer.File>,
+    @Param('id') roomId: Types.ObjectId,
+    @Body()
+    body: IUpdateRoomBody,
   ): Promise<IRoom | null> {
-    const newImagesFilenames: string[] = images.map(
+    const newImagesFilenames: string[] = uploadImages.map(
       (image: Express.Multer.File) => image.filename,
     );
-    updateRoomDto.images = updateRoomDto.images
-      ? updateRoomDto.images.concat(newImagesFilenames)
+    body.images = body.images
+      ? body.images.concat(newImagesFilenames)
       : newImagesFilenames;
-    return this.hotelsApiService.updateRoom(id, updateRoomDto);
+    const updateRoomDto = new UpdateRoomDto(roomId, body);
+    return this.hotelsApiService.updateRoom(updateRoomDto);
   }
 }

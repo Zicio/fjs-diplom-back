@@ -5,6 +5,7 @@ import { Types } from 'mongoose';
 
 import { IQueryGetRoomsParams, IRoom } from './interfaces';
 import { HotelsApiService } from './hotels-api.service';
+import { GetRoomsDto } from './dto/getRooms.dto';
 
 @Controller('api/common')
 export class HotelsApiCommonController {
@@ -15,13 +16,13 @@ export class HotelsApiCommonController {
   @UseGuards(isEnabledGuard)
   @Roles([Role.Client])
   async getRooms(
-    @Query() query: IQueryGetRoomsParams,
-    @Req() request: Request,
+    @Query()
+    query: IQueryGetRoomsParams,
+    @Req() request: Request & { isEnabled: boolean },
   ): Promise<IRoom[]> {
-    const isEnabled: boolean | undefined = (
-      request as Request & { isEnabled: boolean }
-    ).isEnabled;
-    return this.hotelsApiService.getRooms(query, isEnabled);
+    const isEnabled: boolean | undefined = request.isEnabled;
+    const getRoomsDto = new GetRoomsDto(query, isEnabled);
+    return this.hotelsApiService.getRooms(getRoomsDto);
   }
 
   // 2.1.2. Информация о конкретном номере

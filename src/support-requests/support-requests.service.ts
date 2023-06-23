@@ -17,8 +17,8 @@ interface ISendMessageDto {
 interface IGetChatListParams {
   user: Types.ObjectId | null;
   isActive: boolean;
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
 }
 
 interface ISupportRequestService {
@@ -59,18 +59,9 @@ export class SupportRequestsService implements ISupportRequestService {
 
   async findSupportRequests(params: IGetChatListParams) {
     const { user, isActive, limit, offset } = params;
-    if (user) {
-      return this.supportRequestModel
-        .find({ user, isActive })
-        .populate('user', 'name email contactPhone')
-        .limit(limit)
-        .skip(offset);
-    }
-    return this.supportRequestModel
-      .find({ isActive })
-      .populate('user', 'name email contactPhone')
-      .limit(limit)
-      .skip(offset);
+    const query = this.supportRequestModel.find({ isActive });
+    user && query.where('user').equals(user);
+    return query.limit(limit ?? 0).skip(offset ?? 0);
   }
 
   async sendMessage(data: ISendMessageDto): Promise<Message> {

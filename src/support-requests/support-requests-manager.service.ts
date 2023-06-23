@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
+import { IMarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
 import { Model, Types } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,8 +8,8 @@ import {
   SupportRequestDocument,
 } from './schemas/support-request.schema';
 
-export interface ISupportRequestEmployeeService {
-  markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void>;
+export interface ISupportRequestManagerService {
+  markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void>;
 
   getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]>;
 
@@ -17,8 +17,8 @@ export interface ISupportRequestEmployeeService {
 }
 
 @Injectable()
-export class SupportRequestsEmployeeService
-  implements ISupportRequestEmployeeService
+export class SupportRequestsManagerService
+  implements ISupportRequestManagerService
 {
   constructor(
     @InjectModel(SupportRequest.name)
@@ -26,7 +26,7 @@ export class SupportRequestsEmployeeService
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) {}
 
-  async markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void> {
+  async markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void> {
     try {
       const { user, supportRequest, createdBefore } = params;
       const supportRequestToUpdate = await this.supportRequestModel

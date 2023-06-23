@@ -1,14 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SupportRequestsClientService } from '../support-requests/support-requests-client.service';
 import { CreateSupportRequestDto } from './dto/createSupportRequest.dto';
-import {
-  IMessage,
-  IQueryGetSupportRequestsParams,
-  ISupportRequest,
-} from './interfaces';
+import { IMessage, ISupportRequest } from './interfaces';
 import { SupportRequestDocument } from '../support-requests/schemas/support-request.schema';
 import { SupportRequestsService } from '../support-requests/support-requests.service';
-import { SupportRequestsEmployeeService } from '../support-requests/support-requests-employee.service';
+import { SupportRequestsManagerService } from '../support-requests/support-requests-manager.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import {
   Message,
@@ -17,13 +13,14 @@ import {
 import { Types } from 'mongoose';
 import { UsersService } from '../users/users.service';
 import { SendMessageDto } from './dto/sendMessage.dto';
+import { GetSupportRequestsDto } from './dto/getSupportRequests.dto';
 
 @Injectable()
 export class SupportRequestsApiService {
   constructor(
     private readonly supportRequestsService: SupportRequestsService,
     private readonly supportRequestsClientService: SupportRequestsClientService,
-    private readonly supportRequestsEmployeeService: SupportRequestsEmployeeService,
+    private readonly supportRequestsManagerService: SupportRequestsManagerService,
     private readonly userService: UsersService,
   ) {}
 
@@ -69,10 +66,10 @@ export class SupportRequestsApiService {
   //  2.5.2. Получение списка обращений в поддержку для клиента
   //  2.5.3. Получение списка обращений в поддержку для менеджера
   async getSupportRequests(
-    query: IQueryGetSupportRequestsParams,
-    user: Types.ObjectId | null,
+    getSupportRequestsDto: GetSupportRequestsDto,
   ): Promise<ISupportRequest[]> {
     try {
+      const { user, ...query } = getSupportRequestsDto;
       const supportRequests =
         (await this.supportRequestsService.findSupportRequests({
           user,
@@ -85,7 +82,7 @@ export class SupportRequestsApiService {
           const { id, createdAt, isActive, user: userData } = supportRequest;
           const unreadMessages: Message[] = user
             ? await this.supportRequestsClientService.getUnreadCount(id)
-            : await this.supportRequestsEmployeeService.getUnreadCount(id);
+            : await this.supportRequestsManagerService.getUnreadCount(id);
           const hasNewMessages = !!unreadMessages.length;
           if (!user) {
             const { id: userId, name, email, contactPhone } = userData;

@@ -6,13 +6,13 @@ import {
 import { Message, MessageDocument } from './schemas/message.schema';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { MarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
+import { IMarkMessagesAsReadDto } from './shared-interfaces/support-requests-interface';
 
 interface ISupportRequestClientService {
   //  в аргументах createSupportRequest убрал text, так как добавление сообщения производится через SupportRequestService.sendMessage
   createSupportRequest(user: Types.ObjectId): Promise<SupportRequest>;
 
-  markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void>;
+  markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void>;
 
   getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]>;
 }
@@ -33,7 +33,7 @@ export class SupportRequestsClientService
     return supportRequest.save();
   }
 
-  async markMessagesAsRead(params: MarkMessagesAsReadDto): Promise<void> {
+  async markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void> {
     try {
       const { user, supportRequest, createdBefore } = params;
       const supportRequestToUpdate = await this.supportRequestModel

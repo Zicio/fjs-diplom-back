@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 export class CreateRoomDto {
-  description: string;
-  hotel: Types.ObjectId;
+  readonly description: string;
+  readonly hotel: Types.ObjectId;
   images: Express.Multer.File[];
 }

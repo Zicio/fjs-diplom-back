@@ -13,9 +13,9 @@ export interface IRoom {
 }
 
 export interface IQueryGetRoomsParams {
-  limit: number;
-  offset: number;
   hotel: Types.ObjectId;
+  limit?: number;
+  offset?: number;
 }
 
 export interface IRoomParams {
@@ -24,14 +24,20 @@ export interface IRoomParams {
   images: string[];
 }
 
-export interface IQueryGetHotelsParams {
-  limit: number;
-  offset: number;
-  title: string;
-}
-
 export interface IHotel {
   id: Types.ObjectId;
   title: string;
   description: string;
+}
+
+export interface IGetHotelsBody {
+  title: string;
+  description: string;
+}
+
+export interface IUpdateRoomBody {
+  description: string;
+  hotel: Types.ObjectId;
+  isEnabled: boolean;
+  images: Array<Express.Multer.File | string>;
 }

@@ -4,28 +4,14 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/createUser.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserDocument } from '../users/schemas/user.schema';
-import { IQueryParams } from './user-management.controller';
-
-export interface ICreateUserResponse {
-  id: number;
-  email: string;
-  name: string;
-  contactPhone: string;
-  role: string;
-}
-
-export interface IGetUsersResponse {
-  id: number;
-  email: string;
-  name: string;
-  contactPhone: string;
-}
+import { GetUsersDto } from './dto/getUsers.dto';
+import { ICreateUserResponse, IGetUsersResponse } from './interfaces';
 
 @Injectable()
-export class UserManagementService {
+export class UserManagementApiService {
   constructor(private readonly usersService: UsersService) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<ICreateUserResponse> {
@@ -40,17 +26,23 @@ export class UserManagementService {
         );
       }
       const passwordHash: string = await bcrypt.hash(password, 10);
-      const newUser: UserDocument = await this.usersService.create({
+      const {
+        id,
+        email: newUserEmail,
+        name,
+        contactPhone,
+        role,
+      } = await this.usersService.create({
         passwordHash,
         email,
         ...rest,
       });
       return {
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-        contactPhone: newUser.contactPhone,
-        role: newUser.role,
+        id,
+        email: newUserEmail,
+        name,
+        contactPhone,
+        role,
       };
     } catch (e: unknown) {
       if (e instanceof BadRequestException) {
@@ -62,15 +54,16 @@ export class UserManagementService {
     }
   }
 
-  async getUsers(params: IQueryParams): Promise<IGetUsersResponse[]> {
+  async getUsers(params: GetUsersDto): Promise<IGetUsersResponse[]> {
     try {
-      const users = await this.usersService.findAll(params);
-      return users.map((user) => {
+      const users: UserDocument[] = await this.usersService.findAll(params);
+      return users.map((user: UserDocument) => {
+        const { id, email, name, contactPhone } = user;
         return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          contactPhone: user.contactPhone,
+          id,
+          email,
+          name,
+          contactPhone,
         };
       });
     } catch (e: unknown) {

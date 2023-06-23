@@ -14,8 +14,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 import { Types } from 'mongoose';
 import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
-import { SendMessageDto } from './dto/sendMessage.dto';
 import { UserDocument } from '../users/schemas/user.schema';
+import { SendMessageDto } from './dto/sendMessage.dto';
 
 @Controller('api/common/support-requests')
 export class SupportRequestsCommonApiController {
@@ -38,30 +38,35 @@ export class SupportRequestsCommonApiController {
   @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   @Roles([Role.Manager, Role.Client])
   async sendMessage(
-    @Param('id') id: Types.ObjectId,
-    @Body() sendMessageDto: SendMessageDto,
+    @Param('id') supportRequestId: Types.ObjectId,
+    @Body() body: { text: string },
     @Req() req: Request & { user: UserDocument },
   ): Promise<IMessage[]> {
-    sendMessageDto.author = req.user.id;
-    sendMessageDto.supportRequest = id;
+    const sendMessageDto = new SendMessageDto(
+      req.user.id,
+      supportRequestId,
+      body.text,
+    );
+
     return this.supportRequestsApiService.sendMessage(sendMessageDto);
   }
 
-  //
-  // //  2.5.6. Отправка события, что сообщения прочитаны
-  // @Post('support-requests/:id/messages/read')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  //  2.5.6. Отправка события, что сообщения прочитаны
+  // @Post(':id/messages/read')
+  // @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   // @Roles([Role.Manager, Role.Client])
   // async markMessagesAsRead(
-  //   @Param('id') id: Types.ObjectId,
-  //   @Req() req: Request & { user: any },
-  //   @Body() markMessagesAsReadDto: MarkMessageAsReadDto,
+  //   @Param('id') supportRequestId: Types.ObjectId,
+  //   @Req() req: Request & { user: UserDocument },
+  //   @Body() body: { createdBefore: Date },
   // ): Promise<{ success: boolean }> {
-  //   const userRole = req.user.role;
+  //   const markMessagesAsReadDto = new MarkMessageAsReadDto(
+  //     req.user.id,
+  //     supportRequestId,
+  //     body.createdBefore,
+  //   );
   //   return this.supportRequestsApiService.markMessagesAsRead(
-  //     id,
   //     markMessagesAsReadDto,
-  //     userRole,
   //   );
   // }
 

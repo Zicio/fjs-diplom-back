@@ -7,7 +7,7 @@ import {
 } from './schemas/support-request.schema';
 import { Message, MessageSchema } from './schemas/message.schema';
 import { SupportRequestsClientService } from './support-requests-client.service';
-import { SupportRequestsEmployeeService } from './support-requests-employee.service';
+import { SupportRequestsManagerService } from './support-requests-manager.service';
 
 @Module({
   imports: [
@@ -19,12 +19,12 @@ import { SupportRequestsEmployeeService } from './support-requests-employee.serv
   providers: [
     SupportRequestsService,
     SupportRequestsClientService,
-    SupportRequestsEmployeeService,
+    SupportRequestsManagerService,
   ],
   exports: [
     SupportRequestsService,
     SupportRequestsClientService,
-    SupportRequestsEmployeeService,
+    SupportRequestsManagerService,
   ],
 })
 export class SupportRequestsModule {}

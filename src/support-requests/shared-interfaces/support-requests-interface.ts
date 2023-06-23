@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export interface MarkMessagesAsReadDto {
+export interface IMarkMessagesAsReadDto {
   user: Types.ObjectId;
   supportRequest: Types.ObjectId;
   createdBefore: Date;

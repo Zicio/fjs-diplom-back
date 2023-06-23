@@ -9,8 +9,8 @@ export interface ISupportRequest {
 }
 
 export interface IQueryGetSupportRequestsParams {
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
   isActive: boolean;
 }
 

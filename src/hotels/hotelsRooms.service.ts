@@ -4,8 +4,8 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 interface ISearchRoomsParams {
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
   hotel: Types.ObjectId;
   isEnabled?: boolean;
 }
@@ -47,7 +47,7 @@ export class HotelsRoomsService implements IHotelsRoomsService {
       query.where('isEnabled').equals(isEnabled);
     }
     query.populate('hotel', 'id title');
-    return query.skip(offset).limit(limit);
+    return query.skip(offset ?? 0).limit(limit ?? 0);
   }
 
   async update(

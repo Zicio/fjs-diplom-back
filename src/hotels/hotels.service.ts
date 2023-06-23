@@ -4,8 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 interface ISearchHotelParams {
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
   title: string;
 }
 
@@ -44,7 +44,10 @@ export class HotelsService implements IHotelService {
     const query = {
       title: { $regex: new RegExp(title, 'i') },
     };
-    return this.hotelModel.find(query).limit(limit).skip(offset);
+    return this.hotelModel
+      .find(query)
+      .limit(limit ?? 0)
+      .skip(offset ?? 0);
   }
 
   async update(

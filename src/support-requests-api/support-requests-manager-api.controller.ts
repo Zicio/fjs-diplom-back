@@ -4,6 +4,7 @@ import { SupportRequestsApiService } from './support-requests-api.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
+import { GetSupportRequestsDto } from './dto/getSupportRequests.dto';
 
 @Controller('api/manager/support-requests')
 export class SupportRequestsManagerApiController {
@@ -18,6 +19,9 @@ export class SupportRequestsManagerApiController {
   async getSupportRequestsForManager(
     @Query() query: IQueryGetSupportRequestsParams,
   ): Promise<ISupportRequest[]> {
-    return this.supportRequestsApiService.getSupportRequests(query, null);
+    const getSupportRequestDto = new GetSupportRequestsDto(null, query);
+    return this.supportRequestsApiService.getSupportRequests(
+      getSupportRequestDto,
+    );
   }
 }

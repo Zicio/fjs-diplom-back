@@ -7,13 +7,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HotelsModule } from './hotels/hotels.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { AuthModule } from './auth/auth.module';
-import { UserManagementModule } from './user-management/user-management.module';
 import { HotelsApiModule } from './hotels-api/hotels-api.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 import { SupportRequestsModule } from './support-requests/support-requests.module';
 import { SupportRequestsApiModule } from './support-requests-api/support-requests-api.module';
+import { UserManagementApiModule } from './user-management-api/user-management-api.module';
 
 @Module({
   imports: [
@@ -35,7 +35,7 @@ import { SupportRequestsApiModule } from './support-requests-api/support-request
     ReservationsModule,
     SupportRequestsModule,
     AuthModule,
-    UserManagementModule,
+    UserManagementApiModule,
     HotelsApiModule,
     // ReservationsApiModule,
     SupportRequestsApiModule,
