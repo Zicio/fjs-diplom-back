@@ -9,7 +9,7 @@ export class Message {
   @Prop({ ref: User.name, required: true })
   author: Types.ObjectId;
 
-  @Prop({ required: true, default: new Date() }) // TODO: на фронте обрабатывать дату с помощью moment-timezone
+  @Prop({ required: true, default: new Date() })
   sentAt: Date;
 
   @Prop({ required: true })

@@ -118,22 +118,32 @@ export class SupportRequestsService implements ISupportRequestService {
   }
 
   subscribe(
-    handler: (
-      supportRequest: SupportRequest | null,
-      message: Message | null,
-    ) => void,
+    handler: (supportRequest: SupportRequest, message: Message) => void,
   ): () => void {
     const changeStream = this.supportRequestModel.watch();
 
     changeStream.on('change', async (change) => {
       if (change.operationType === 'update') {
-        const { _id, messages } = change.updateDescription.updatedFields;
-        const supportRequest = await this.supportRequestModel.findById(_id);
-        const latestMessage = messages[messages.length - 1];
+        const updatedFields = change.updateDescription.updatedFields;
+        console.log({ updatedFields });
+        if ('messages' in updatedFields) {
+          const id = change.documentKey._id;
+          const { messages }: { messages: Types.ObjectId[] } = updatedFields;
+          const supportRequest = (await this.supportRequestModel.findById(
+            id,
+          )) as SupportRequestDocument;
+          const latestMessage = messages[messages.length - 1];
+          console.log({ latestMessage });
 
-        if (latestMessage) {
-          const message = await this.messageModel.findById(latestMessage);
-          handler(supportRequest, message);
+          if (latestMessage) {
+            const message: Message | null = await this.messageModel
+              .findById(latestMessage)
+              .populate('author', 'id name');
+            if (!message) {
+              return;
+            }
+            handler(supportRequest, message);
+          }
         }
       }
     });

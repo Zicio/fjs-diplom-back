@@ -5,6 +5,7 @@ import { SupportRequestsManagerApiController } from './support-requests-manager-
 import { SupportRequestsApiService } from './support-requests-api.service';
 import { SupportRequestsModule } from '../support-requests/support-requests.module';
 import { UsersModule } from '../users/users.module';
+import { SupportRequestsApiGateway } from './support-requests-api.gateway';
 
 @Module({
   imports: [SupportRequestsModule, UsersModule],
@@ -13,6 +14,6 @@ import { UsersModule } from '../users/users.module';
     SupportRequestsCommonApiController,
     SupportRequestsManagerApiController,
   ],
-  providers: [SupportRequestsApiService],
+  providers: [SupportRequestsApiService, SupportRequestsApiGateway],
 })
 export class SupportRequestsApiModule {}

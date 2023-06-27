@@ -70,6 +70,4 @@ export class SupportRequestsCommonApiController {
       markMessagesAsReadDto,
     );
   }
-
-  //  2.5.7. Подписка на сообщения из чата техподдержки
 }

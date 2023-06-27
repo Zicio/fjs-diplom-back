@@ -31,7 +31,6 @@ export class SupportRequestsClientApiController {
     @Body() body: { text: string },
     @Req() req: Request & { user: UserDocument },
   ): Promise<ISupportRequest> {
-    // TODO: В задании тип ответа стоит !!!массив!!! обращений. Почему?
     const createSupportRequestDto = new CreateSupportRequestDto(
       req.user.id,
       body.text,
