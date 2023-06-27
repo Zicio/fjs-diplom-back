@@ -7,6 +7,7 @@ import {
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
+import { IMarkMessagesAsReadDto } from './interfaces';
 
 interface ISendMessageDto {
   author: Types.ObjectId;
@@ -32,6 +33,8 @@ interface ISupportRequestService {
     supportRequest: Types.ObjectId,
     user: UserDocument,
   ): Promise<Message[]>;
+
+  markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void>;
 
   subscribe(
     handler: (
@@ -61,7 +64,10 @@ export class SupportRequestsService implements ISupportRequestService {
     const { user, isActive, limit, offset } = params;
     const query = this.supportRequestModel.find({ isActive });
     user && query.where('user').equals(user);
-    return query.limit(limit ?? 0).skip(offset ?? 0);
+    return query
+      .populate('user')
+      .limit(limit ?? 0)
+      .skip(offset ?? 0);
   }
 
   async sendMessage(data: ISendMessageDto): Promise<Message> {
@@ -69,14 +75,46 @@ export class SupportRequestsService implements ISupportRequestService {
     await message.save();
     await this.supportRequestModel.updateOne(
       { _id: data.supportRequest },
-      { $push: { messages: message } },
+      { $push: { messages: message.id } },
     );
     return message;
   }
 
   async getMessages(supportRequest: Types.ObjectId): Promise<Message[]> {
     const supportRequestData = await this.getSupportRequestById(supportRequest);
-    return (supportRequestData as SupportRequestDocument).messages;
+    const messagesIds = supportRequestData?.messages;
+    return this.messageModel.find({ _id: { $in: messagesIds } });
+  }
+
+  async markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void> {
+    const { user, supportRequest, createdBefore } = params;
+    const supportRequestToUpdate = (await this.supportRequestModel
+      .findById(supportRequest)
+      .populate('messages')) as SupportRequestDocument & {
+      messages: MessageDocument[];
+    };
+
+    const messages = supportRequestToUpdate.messages;
+    const messagesToMark = messages.filter((message: MessageDocument) => {
+      return (
+        message.author !== user &&
+        !message.readAt &&
+        message.sentAt < createdBefore
+      );
+    });
+
+    const messageIdToMark: Types.ObjectId[] = messagesToMark.map(
+      (message: MessageDocument) => {
+        return message._id;
+      },
+    );
+
+    await this.messageModel.updateMany(
+      { _id: { $in: messageIdToMark } },
+      { readAt: new Date() },
+    );
+
+    await supportRequestToUpdate.save();
   }
 
   subscribe(

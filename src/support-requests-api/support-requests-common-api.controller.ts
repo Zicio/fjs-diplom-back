@@ -63,7 +63,6 @@ export class SupportRequestsCommonApiController {
   ): Promise<IMarkMessageAsReadResponse> {
     const markMessagesAsReadDto = new MarkMessageAsReadDto(
       req.user.id,
-      req.user.role,
       supportRequestId,
       new Date(body.createdBefore),
     );

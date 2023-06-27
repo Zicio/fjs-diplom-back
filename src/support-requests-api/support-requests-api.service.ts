@@ -19,7 +19,6 @@ import { UsersService } from '../users/users.service';
 import { SendMessageDto } from './dto/sendMessage.dto';
 import { GetSupportRequestsDto } from './dto/getSupportRequests.dto';
 import { MarkMessageAsReadDto } from './dto/markMessageAsRead.dto';
-import { Role } from '../auth/roles.decorator';
 
 @Injectable()
 export class SupportRequestsApiService {
@@ -164,10 +163,9 @@ export class SupportRequestsApiService {
     markMessagesAsReadDto: MarkMessageAsReadDto,
   ): Promise<IMarkMessageAsReadResponse> {
     try {
-      const { role, ...rest } = markMessagesAsReadDto;
-      role === Role.Client
-        ? await this.supportRequestsClientService.markMessagesAsRead(rest)
-        : await this.supportRequestsManagerService.markMessagesAsRead(rest);
+      await this.supportRequestsService.markMessagesAsRead(
+        markMessagesAsReadDto,
+      );
       return { success: true };
     } catch (e) {
       throw new InternalServerErrorException('Ошибка в отметке сообщений');
