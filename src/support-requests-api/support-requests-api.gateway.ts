@@ -24,7 +24,7 @@ export class SupportRequestsApiGateway {
   @SubscribeMessage('subscribeToChat')
   handleSubscribeToChat(
     @ConnectedSocket() client: Socket,
-    @MessageBody() chatId: string,
+    @MessageBody() body: { chatId: string },
   ) {
     const handler = (
       supportRequest: SupportRequestDocument,
@@ -34,7 +34,7 @@ export class SupportRequestsApiGateway {
         author: { id: Types.ObjectId; name: string };
       },
     ): void => {
-      if (supportRequest.id === chatId) {
+      if (supportRequest.id === body.chatId) {
         const { id, createdAt, text, readAt, author } = message;
         const response = {
           id,
