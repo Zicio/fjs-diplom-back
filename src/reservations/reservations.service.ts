@@ -3,7 +3,7 @@ import { Model, Types } from 'mongoose';
 import { Reservation, ReservationDocument } from './schemas/reservation.schema';
 import { InjectModel } from '@nestjs/mongoose';
 
-interface ReservationDto {
+interface IReservationDto {
   userId: Types.ObjectId;
   hotelId: Types.ObjectId;
   roomId: Types.ObjectId;
@@ -11,19 +11,19 @@ interface ReservationDto {
   dateEnd: Date;
 }
 
-interface ReservationSearchOptions {
+interface IReservationSearchOptions {
   userId: Types.ObjectId;
   dateStart: Date;
   dateEnd: Date;
 }
 
 interface IReservationService {
-  addReservation(data: ReservationDto): Promise<Reservation>;
+  addReservation(data: IReservationDto): Promise<Reservation>;
 
   removeReservation(id: Types.ObjectId): Promise<void>;
 
   getReservations(
-    filter: ReservationSearchOptions,
+    filter: IReservationSearchOptions,
   ): Promise<Array<Reservation>>;
 }
 
@@ -34,7 +34,7 @@ export class ReservationsService implements IReservationService {
     private reservationModel: Model<ReservationDocument>,
   ) {}
 
-  async addReservation(data: ReservationDto): Promise<Reservation> {
+  async addReservation(data: IReservationDto): Promise<Reservation> {
     const query = {
       roomId: data.roomId,
       $and: [
@@ -55,7 +55,7 @@ export class ReservationsService implements IReservationService {
   }
 
   async getReservations(
-    filter: ReservationSearchOptions,
+    filter: IReservationSearchOptions,
   ): Promise<Array<Reservation>> {
     return this.reservationModel.find(filter);
   }

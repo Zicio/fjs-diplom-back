@@ -14,6 +14,7 @@ import * as path from 'path';
 import { SupportRequestsModule } from './support-requests/support-requests.module';
 import { SupportRequestsApiModule } from './support-requests-api/support-requests-api.module';
 import { UserManagementApiModule } from './user-management-api/user-management-api.module';
+import { ReservationsApiModule } from './reservations-api/reservations-api.module';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { UserManagementApiModule } from './user-management-api/user-management-a
     AuthModule,
     UserManagementApiModule,
     HotelsApiModule,
-    // ReservationsApiModule,
+    ReservationsApiModule,
     SupportRequestsApiModule,
   ],
   controllers: [AppController],
