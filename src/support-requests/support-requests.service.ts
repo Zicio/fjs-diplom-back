@@ -60,7 +60,9 @@ export class SupportRequestsService implements ISupportRequestService {
     return this.supportRequestModel.findById(id);
   }
 
-  async findSupportRequests(params: IGetChatListParams) {
+  async findSupportRequests(
+    params: IGetChatListParams,
+  ): Promise<SupportRequest[]> {
     const { user, isActive, limit, offset } = params;
     const query = this.supportRequestModel.find({ isActive });
     user && query.where('user').equals(user);
@@ -119,14 +121,17 @@ export class SupportRequestsService implements ISupportRequestService {
 
   subscribe(
     handler: (supportRequest: SupportRequest, message: Message) => void,
-  ): () => void {
+  ) {
     const changeStream = this.supportRequestModel.watch();
 
     changeStream.on('change', async (change) => {
       if (change.operationType === 'update') {
         const updatedFields = change.updateDescription.updatedFields;
         console.log({ updatedFields });
-        if ('messages' in updatedFields) {
+        if (
+          Object.keys(updatedFields).length === 1 &&
+          'messages' in updatedFields
+        ) {
           const id = change.documentKey._id;
           const { messages }: { messages: Types.ObjectId[] } = updatedFields;
           const supportRequest = (await this.supportRequestModel.findById(
