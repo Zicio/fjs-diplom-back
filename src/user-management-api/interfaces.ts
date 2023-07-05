@@ -1,5 +1,7 @@
+import { ID } from '../globalType';
+
 export interface ICreateUserResponse {
-  id: number;
+  id: ID;
   email: string;
   name: string;
   contactPhone: string;
@@ -7,7 +9,7 @@ export interface ICreateUserResponse {
 }
 
 export interface IGetUsersResponse {
-  id: number;
+  id: ID;
   email: string;
   name: string;
   contactPhone: string;

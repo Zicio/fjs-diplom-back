@@ -8,7 +8,7 @@ import { SupportRequestsService } from '../support-requests/support-requests.ser
 import { SupportRequestDocument } from '../support-requests/schemas/support-request.schema';
 import { MessageDocument } from '../support-requests/schemas/message.schema';
 import { Socket } from 'socket.io';
-import { Types } from 'mongoose';
+import { ID } from '../globalType';
 
 @WebSocketGateway({
   cors: {
@@ -31,7 +31,7 @@ export class SupportRequestsApiGateway {
       message: MessageDocument & {
         createdAt: Date;
         readAt: Date;
-        author: { id: Types.ObjectId; name: string };
+        author: { id: ID; name: string };
       },
     ): void => {
       if (supportRequest.id === body.chatId) {

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Hotel, HotelDocument } from './schemas/hotel.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
+import { ID } from '../globalType';
 
 interface ISearchHotelParams {
   limit?: number;
@@ -17,11 +18,11 @@ interface IUpdateHotelParams {
 interface IHotelService {
   create(data: any): Promise<Hotel>;
 
-  findById(id: Types.ObjectId): Promise<Hotel | null>;
+  findById(id: ID): Promise<Hotel | null>;
 
   search(params: ISearchHotelParams): Promise<Hotel[]>;
 
-  update(id: Types.ObjectId, data: IUpdateHotelParams): Promise<Hotel | null>;
+  update(id: ID, data: IUpdateHotelParams): Promise<Hotel | null>;
 }
 
 @Injectable()
@@ -35,7 +36,7 @@ export class HotelsService implements IHotelService {
     return hotel.save();
   }
 
-  async findById(id: Types.ObjectId): Promise<Hotel | null> {
+  async findById(id: ID): Promise<Hotel | null> {
     return this.hotelModel.findById(id);
   }
 
@@ -50,10 +51,7 @@ export class HotelsService implements IHotelService {
       .skip(offset ?? 0);
   }
 
-  async update(
-    id: Types.ObjectId,
-    data: IUpdateHotelParams,
-  ): Promise<Hotel | null> {
+  async update(id: ID, data: IUpdateHotelParams): Promise<Hotel | null> {
     return this.hotelModel.findByIdAndUpdate(id, data, { new: true });
   }
 }

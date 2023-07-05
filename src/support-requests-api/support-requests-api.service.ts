@@ -14,11 +14,11 @@ import {
   Message,
   MessageDocument,
 } from '../support-requests/schemas/message.schema';
-import { Types } from 'mongoose';
 import { UsersService } from '../users/users.service';
 import { SendMessageDto } from './dto/sendMessage.dto';
 import { GetSupportRequestsDto } from './dto/getSupportRequests.dto';
 import { MarkMessageAsReadDto } from './dto/markMessageAsRead.dto';
+import { ID } from '../globalType';
 
 @Injectable()
 export class SupportRequestsApiService {
@@ -119,7 +119,7 @@ export class SupportRequestsApiService {
   }
 
   //  2.5.4. Получение истории сообщений из обращения в техподдержку
-  async getMessages(supportRequestId: Types.ObjectId): Promise<IMessage[]> {
+  async getMessages(supportRequestId: ID): Promise<IMessage[]> {
     try {
       const messages: Message[] = await this.supportRequestsService.getMessages(
         supportRequestId,

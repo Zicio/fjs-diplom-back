@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ID } from '../../globalType';
 
-export class CreateHotelDto {
+export class HotelResponseDto {
+  @ApiProperty({ example: '1', description: 'Идентификатор гостиницы' })
+  id: ID;
   @ApiProperty({ example: 'Киев', description: 'Название гостиницы' })
-  readonly title: string;
+  title: string;
   @ApiProperty({ example: '4 звезды', description: 'Описание гостиницы' })
-  readonly description: string;
+  description: string;
 }

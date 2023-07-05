@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   SupportRequest,
   SupportRequestDocument,
 } from './schemas/support-request.schema';
+import { ID } from '../globalType';
 
 export interface ISupportRequestManagerService {
-  getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]>;
+  getUnreadCount(supportRequest: ID): Promise<Message[]>;
 
-  closeRequest(supportRequest: Types.ObjectId): Promise<SupportRequest | null>;
+  closeRequest(supportRequest: ID): Promise<SupportRequest | null>;
 }
 
 @Injectable()
@@ -23,7 +24,7 @@ export class SupportRequestsManagerService
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) {}
 
-  async getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]> {
+  async getUnreadCount(supportRequest: ID): Promise<Message[]> {
     const supportRequestToReceipt = (await this.supportRequestModel
       .findById(supportRequest)
       .populate('messages')) as SupportRequestDocument & {
@@ -41,9 +42,7 @@ export class SupportRequestsManagerService
     }
   }
 
-  async closeRequest(
-    supportRequest: Types.ObjectId,
-  ): Promise<SupportRequest | null> {
+  async closeRequest(supportRequest: ID): Promise<SupportRequest | null> {
     return this.supportRequestModel.findByIdAndUpdate(supportRequest, {
       isActive: false,
     });

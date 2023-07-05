@@ -1,14 +1,14 @@
-import { Types } from 'mongoose';
+import { ID } from '../../globalType';
 
 export class GetRoomsDto {
-  readonly hotel: Types.ObjectId;
+  readonly hotel: ID;
   readonly limit?: number;
   readonly offset?: number;
   readonly isEnabled?: boolean;
 
   constructor(
     query: {
-      hotel: Types.ObjectId;
+      hotel: ID;
       limit?: number;
       offset?: number;
     },

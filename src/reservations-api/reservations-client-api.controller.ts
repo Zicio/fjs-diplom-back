@@ -10,9 +10,9 @@ import {
 import { ReservationsApiService } from './reservations-api.service';
 import { Role, Roles } from '../auth/roles.decorator';
 import { CreateReservationDto } from './dto/create-reservation.dto';
-import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { ID } from '../globalType';
 
 @Controller('api/client/reservations')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -38,9 +38,7 @@ export class ReservationsClientApiController {
 
   //  2.2.3. Отмена бронирования клиентом
   @Delete('client/reservations/:id')
-  async deleteReservationByClient(
-    @Param('id') id: Types.ObjectId,
-  ) /*: Promise<void>*/ {
+  async deleteReservationByClient(@Param('id') id: ID) /*: Promise<void>*/ {
     return 'Hello World!';
     // return this.reservationsApiService.deleteReservationByClient(id);
   }

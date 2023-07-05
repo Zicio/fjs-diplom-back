@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserDocument } from '../../users/schemas/user.schema';
-import { Types } from 'mongoose';
 import { SupportRequest } from '../../support-requests/schemas/support-request.schema';
 import { Role } from '../../auth/roles.decorator';
 import { SupportRequestsService } from '../../support-requests/support-requests.service';
+import { ID } from '../../globalType';
 
 @Injectable()
 export class SupportRequestsAccessGuard implements CanActivate {
@@ -22,7 +22,7 @@ export class SupportRequestsAccessGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user: UserDocument = request.user;
-    const supportRequestId: Types.ObjectId = request.params.id;
+    const supportRequestId: ID = request.params.id;
 
     if (user.role === Role.Manager) {
       return true;

@@ -1,15 +1,11 @@
-import { Types } from 'mongoose';
+import { ID } from '../../globalType';
 
 export class MarkMessageAsReadDto {
-  readonly user: Types.ObjectId;
-  readonly supportRequest: Types.ObjectId;
+  readonly user: ID;
+  readonly supportRequest: ID;
   readonly createdBefore: Date;
 
-  constructor(
-    user: Types.ObjectId,
-    supportRequest: Types.ObjectId,
-    createdBefore: Date,
-  ) {
+  constructor(user: ID, supportRequest: ID, createdBefore: Date) {
     this.user = user;
     this.supportRequest = supportRequest;
     this.createdBefore = createdBefore;

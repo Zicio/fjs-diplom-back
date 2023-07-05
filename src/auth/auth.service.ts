@@ -6,13 +6,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { Types } from 'mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import { RegistrationDto } from './dto/registration.dto';
-import { RegistrationResponse } from './interfaces';
+import { RegistrationResponseDto } from './dto/registration-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { ID } from '../globalType';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(id: Types.ObjectId): Promise<UserDocument | null> {
+  async validateUser(id: ID): Promise<UserDocument | null> {
     const user: UserDocument | null = await this.usersService.findById(id);
     if (user) {
       return user;
@@ -41,7 +42,7 @@ export class AuthService {
     });
   }
 
-  async login(loginDto: LoginDto, res: Response): Promise<void> {
+  async login(loginDto: LoginDto, res: Response): Promise<LoginResponseDto> {
     try {
       const user: UserDocument | null = await this.usersService.findByEmail(
         loginDto.email,
@@ -61,11 +62,13 @@ export class AuthService {
         httpOnly: true,
         maxAge: Number(process.env.COOKIE_EXPIRES) || 45 * 60 * 1000,
       });
+      const { email, name, contactPhone } = user;
       res.status(200).json({
-        email: user.email,
-        name: user.name,
-        contactPhone: user.contactPhone,
-      });
+        email,
+        name,
+        contactPhone,
+      } as LoginResponseDto);
+      return { email, name, contactPhone };
     } catch (e: unknown) {
       if (e instanceof UnauthorizedException) {
         throw e;
@@ -81,7 +84,7 @@ export class AuthService {
 
   async register(
     registrationDto: RegistrationDto,
-  ): Promise<RegistrationResponse> {
+  ): Promise<RegistrationResponseDto> {
     try {
       const { password, email, ...rest } = registrationDto;
       const user: UserDocument | null = await this.usersService.findByEmail(

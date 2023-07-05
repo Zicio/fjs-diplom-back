@@ -12,11 +12,11 @@ import { SupportRequestsApiService } from './support-requests-api.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
-import { Types } from 'mongoose';
 import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
 import { UserDocument } from '../users/schemas/user.schema';
 import { SendMessageDto } from './dto/sendMessage.dto';
 import { MarkMessageAsReadDto } from './dto/markMessageAsRead.dto';
+import { ID } from '../globalType';
 
 @Controller('api/common/support-requests')
 export class SupportRequestsCommonApiController {
@@ -28,9 +28,7 @@ export class SupportRequestsCommonApiController {
   @Get(':id/messages')
   @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   @Roles([Role.Manager, Role.Client])
-  async getAllSupportRequestMessages(
-    @Param('id') id: Types.ObjectId,
-  ): Promise<IMessage[]> {
+  async getAllSupportRequestMessages(@Param('id') id: ID): Promise<IMessage[]> {
     return this.supportRequestsApiService.getMessages(id);
   }
 
@@ -39,7 +37,7 @@ export class SupportRequestsCommonApiController {
   @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   @Roles([Role.Manager, Role.Client])
   async sendMessage(
-    @Param('id') supportRequestId: Types.ObjectId,
+    @Param('id') supportRequestId: ID,
     @Body() body: { text: string },
     @Req() req: Request & { user: UserDocument },
   ): Promise<IMessage[]> {
@@ -57,7 +55,7 @@ export class SupportRequestsCommonApiController {
   @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard)
   @Roles([Role.Manager, Role.Client])
   async markMessagesAsRead(
-    @Param('id') supportRequestId: Types.ObjectId,
+    @Param('id') supportRequestId: ID,
     @Req() req: Request & { user: UserDocument },
     @Body() body: { createdBefore: string },
   ): Promise<IMarkMessageAsReadResponse> {

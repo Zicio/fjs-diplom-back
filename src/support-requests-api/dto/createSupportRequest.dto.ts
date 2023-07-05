@@ -1,10 +1,10 @@
-import { Types } from 'mongoose';
+import { ID } from '../../globalType';
 
 export class CreateSupportRequestDto {
-  readonly user: Types.ObjectId;
+  readonly user: ID;
   readonly text: string;
 
-  constructor(user: Types.ObjectId, text: string) {
+  constructor(user: ID, text: string) {
     this.user = user;
     this.text = text;
   }

@@ -4,13 +4,14 @@ import {
   SupportRequestDocument,
 } from './schemas/support-request.schema';
 import { Message, MessageDocument } from './schemas/message.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { ID } from '../globalType';
 
 interface ISupportRequestClientService {
-  createSupportRequest(user: Types.ObjectId): Promise<SupportRequest>;
+  createSupportRequest(user: ID): Promise<SupportRequest>;
 
-  getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]>;
+  getUnreadCount(supportRequest: ID): Promise<Message[]>;
 }
 
 @Injectable()
@@ -24,12 +25,12 @@ export class SupportRequestsClientService
     private messageModel: Model<MessageDocument>,
   ) {}
 
-  async createSupportRequest(user: Types.ObjectId): Promise<SupportRequest> {
+  async createSupportRequest(user: ID): Promise<SupportRequest> {
     const supportRequest = new this.supportRequestModel({ user });
     return supportRequest.save();
   }
 
-  async getUnreadCount(supportRequest: Types.ObjectId): Promise<Message[]> {
+  async getUnreadCount(supportRequest: ID): Promise<Message[]> {
     const supportRequestToReceipt = (await this.supportRequestModel
       .findById(supportRequest)
       .populate('messages')) as SupportRequestDocument & {

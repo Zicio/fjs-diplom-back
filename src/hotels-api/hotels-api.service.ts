@@ -5,16 +5,24 @@ import {
 } from '@nestjs/common';
 import { HotelsService } from '../hotels/hotels.service';
 import { HotelsRoomsService } from '../hotels/hotelsRooms.service';
-import { IHotel, IRoom, IRoomParams } from './interfaces';
 import { HotelRoomDocument } from '../hotels/schemas/hotelRoom.schema';
 import { Hotel, HotelDocument } from '../hotels/schemas/hotel.schema';
-import { Types } from 'mongoose';
 import { CreateHotelDto } from './dto/createHotel.dto';
 import { UpdateHotelDto } from './dto/updateHotel.dto';
 import { CreateRoomDto } from './dto/createRoom.dto';
 import { UpdateRoomDto } from './dto/updateRoom.dto';
-import { GetHotelsDto } from './dto/getHotels.dto';
+import { GetHotelsQueryDto } from './dto/getHotels-query.dto';
 import { GetRoomsDto } from './dto/getRooms.dto';
+import { HotelResponseDto } from './dto/hotel-response.dto';
+import { RoomResponseDto } from './dto/room-response.dto';
+import { ID } from '../globalType';
+import { Types } from 'mongoose';
+
+interface IRoomParams {
+  description: string;
+  hotel: Types.ObjectId;
+  images: string[];
+}
 
 @Injectable()
 export class HotelsApiService {
@@ -24,7 +32,7 @@ export class HotelsApiService {
   ) {}
 
   // 2.1.1. Поиск номеров
-  async getRooms(getRoomsDto: GetRoomsDto): Promise<IRoom[]> {
+  async getRooms(getRoomsDto: GetRoomsDto): Promise<RoomResponseDto[]> {
     try {
       const { isEnabled, ...query } = getRoomsDto;
       const rooms = (await this.hotelsRoomsService.search({
@@ -49,7 +57,7 @@ export class HotelsApiService {
   }
 
   //  2.1.2. Информация о конкретном номере
-  async getRoom(id: Types.ObjectId): Promise<IRoom> {
+  async getRoom(id: ID): Promise<RoomResponseDto> {
     try {
       const {
         id: roomId,
@@ -75,7 +83,7 @@ export class HotelsApiService {
   }
 
   // 2.1.3. Добавление гостиницы
-  async createHotel(createHotelDto: CreateHotelDto): Promise<IHotel> {
+  async createHotel(createHotelDto: CreateHotelDto): Promise<HotelResponseDto> {
     try {
       const { id, title, description } = (await this.hotelsService.create(
         createHotelDto,
@@ -91,10 +99,12 @@ export class HotelsApiService {
   }
 
   //  2.1.4. Получение списка гостиниц
-  async getHotels(getHotelsDto: GetHotelsDto): Promise<IHotel[]> {
+  async getHotels(
+    getHotelsQueryDto: GetHotelsQueryDto,
+  ): Promise<HotelResponseDto[]> {
     try {
       const hotels = (await this.hotelsService.search(
-        getHotelsDto,
+        getHotelsQueryDto,
       )) as HotelDocument[];
       return hotels.map((hotel) => {
         const { id, title, description } = hotel;
@@ -110,7 +120,7 @@ export class HotelsApiService {
   }
 
   // 2.1.5. Изменение описания гостиницы
-  async updateHotel(updateHotelDto: UpdateHotelDto): Promise<IHotel> {
+  async updateHotel(updateHotelDto: UpdateHotelDto): Promise<HotelResponseDto> {
     try {
       const { hotel, ...rest } = updateHotelDto;
       const {
@@ -133,11 +143,15 @@ export class HotelsApiService {
   //  2.1.6. Добавление номера
   async createRoom(createRoomDto: CreateRoomDto) {
     try {
-      const { images, ...rest } = createRoomDto;
+      const { hotel: hotelId, images, ...rest } = createRoomDto;
       const imagesFilenames: string[] = images.map(
         (image: Express.Multer.File) => image.filename,
       );
-      const roomParams: IRoomParams = { images: imagesFilenames, ...rest };
+      const roomParams: IRoomParams = {
+        hotel: hotelId as Types.ObjectId,
+        images: imagesFilenames,
+        ...rest,
+      };
       const room = (await this.hotelsRoomsService.create(
         roomParams,
       )) as HotelRoomDocument;
@@ -167,7 +181,9 @@ export class HotelsApiService {
   }
 
   //  2.1.7. Изменение описания номера TODO: проверить как работает при смешанном массиве images
-  async updateRoom(updateRoomDto: UpdateRoomDto): Promise<IRoom | null> {
+  async updateRoom(
+    updateRoomDto: UpdateRoomDto,
+  ): Promise<RoomResponseDto | null> {
     try {
       const { room, ...rest } = updateRoomDto;
       const {

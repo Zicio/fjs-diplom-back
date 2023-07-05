@@ -1,17 +1,17 @@
-import { Types } from 'mongoose';
+import { ID } from '../../globalType';
 
 export class UpdateRoomDto {
-  readonly room: Types.ObjectId;
+  readonly room: ID;
   readonly description: string;
-  readonly hotel: Types.ObjectId;
+  readonly hotel: ID;
   readonly isEnabled: boolean;
   readonly images: Array<Express.Multer.File | string>;
 
   constructor(
-    room: Types.ObjectId,
+    room: ID,
     query: {
       description: string;
-      hotel: Types.ObjectId;
+      hotel: ID;
       isEnabled: boolean;
       images: Array<Express.Multer.File | string>;
     },

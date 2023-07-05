@@ -1,7 +1,7 @@
-import { Types } from 'mongoose';
+import { ID } from '../globalType';
 
 export interface ISupportRequest {
-  id: Types.ObjectId;
+  id: ID;
   createdAt: string;
   isActive: boolean;
   hasNewMessages: boolean;
@@ -15,7 +15,7 @@ export interface IQueryGetSupportRequestsParams {
 }
 
 export interface IMessage {
-  id: Types.ObjectId;
+  id: ID;
   createdAt: string;
   text: string;
   readAt: string | null;
@@ -23,12 +23,12 @@ export interface IMessage {
 }
 
 interface IAuthor {
-  id: Types.ObjectId;
+  id: ID;
   name: string;
 }
 
 export interface IClient {
-  id: Types.ObjectId;
+  id: ID;
   name: string;
   email: string;
   contactPhone: string;

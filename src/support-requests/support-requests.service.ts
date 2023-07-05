@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import {
   SupportRequest,
   SupportRequestDocument,
@@ -8,31 +8,29 @@ import { Message, MessageDocument } from './schemas/message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDocument } from '../users/schemas/user.schema';
 import { IMarkMessagesAsReadDto } from './interfaces';
+import { ID } from '../globalType';
 
 interface ISendMessageDto {
-  author: Types.ObjectId;
-  supportRequest: Types.ObjectId;
+  author: ID;
+  supportRequest: ID;
   text: string;
 }
 
 interface IGetChatListParams {
-  user: Types.ObjectId | null;
+  user: ID | null;
   isActive: boolean;
   limit?: number;
   offset?: number;
 }
 
 interface ISupportRequestService {
-  getSupportRequestById(id: Types.ObjectId): Promise<SupportRequest | null>;
+  getSupportRequestById(id: ID): Promise<SupportRequest | null>;
 
   findSupportRequests(params: IGetChatListParams): Promise<SupportRequest[]>;
 
   sendMessage(data: ISendMessageDto): Promise<Message>;
 
-  getMessages(
-    supportRequest: Types.ObjectId,
-    user: UserDocument,
-  ): Promise<Message[]>;
+  getMessages(supportRequest: ID, user: UserDocument): Promise<Message[]>;
 
   markMessagesAsRead(params: IMarkMessagesAsReadDto): Promise<void>;
 
@@ -54,9 +52,7 @@ export class SupportRequestsService implements ISupportRequestService {
   ) {}
 
   //  Метод добавлен для работы SupportRequestAccessGuard
-  async getSupportRequestById(
-    id: Types.ObjectId,
-  ): Promise<SupportRequest | null> {
+  async getSupportRequestById(id: ID): Promise<SupportRequest | null> {
     return this.supportRequestModel.findById(id);
   }
 
@@ -82,7 +78,7 @@ export class SupportRequestsService implements ISupportRequestService {
     return message;
   }
 
-  async getMessages(supportRequest: Types.ObjectId): Promise<Message[]> {
+  async getMessages(supportRequest: ID): Promise<Message[]> {
     const supportRequestData = await this.getSupportRequestById(supportRequest);
     const messagesIds = supportRequestData?.messages;
     return this.messageModel.find({ _id: { $in: messagesIds } });
@@ -105,7 +101,7 @@ export class SupportRequestsService implements ISupportRequestService {
       );
     });
 
-    const messageIdToMark: Types.ObjectId[] = messagesToMark.map(
+    const messageIdToMark: ID[] = messagesToMark.map(
       (message: MessageDocument) => {
         return message._id;
       },
@@ -133,7 +129,7 @@ export class SupportRequestsService implements ISupportRequestService {
           'messages' in updatedFields
         ) {
           const id = change.documentKey._id;
-          const { messages }: { messages: Types.ObjectId[] } = updatedFields;
+          const { messages }: { messages: ID[] } = updatedFields;
           const supportRequest = (await this.supportRequestModel.findById(
             id,
           )) as SupportRequestDocument;

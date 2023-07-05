@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Reservation, ReservationDocument } from './schemas/reservation.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { ID } from '../globalType';
 
 interface IReservationDto {
-  userId: Types.ObjectId;
-  hotelId: Types.ObjectId;
-  roomId: Types.ObjectId;
+  userId: ID;
+  hotelId: ID;
+  roomId: ID;
   dateStart: Date;
   dateEnd: Date;
 }
 
 interface IReservationSearchOptions {
-  userId: Types.ObjectId;
+  userId: ID;
   dateStart: Date;
   dateEnd: Date;
 }
@@ -20,7 +21,7 @@ interface IReservationSearchOptions {
 interface IReservationService {
   addReservation(data: IReservationDto): Promise<Reservation>;
 
-  removeReservation(id: Types.ObjectId): Promise<void>;
+  removeReservation(id: ID): Promise<void>;
 
   getReservations(
     filter: IReservationSearchOptions,
@@ -50,7 +51,7 @@ export class ReservationsService implements IReservationService {
     return reservation.save();
   }
 
-  async removeReservation(id: Types.ObjectId): Promise<void> {
+  async removeReservation(id: ID): Promise<void> {
     await this.reservationModel.findByIdAndDelete(id);
   }
 

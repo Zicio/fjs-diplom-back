@@ -1,16 +1,13 @@
-import { Types } from 'mongoose';
 import { IQueryGetSupportRequestsParams } from '../interfaces';
+import { ID } from '../../globalType';
 
 export class GetSupportRequestsDto {
-  readonly user: Types.ObjectId | null;
+  readonly user: ID | null;
   readonly isActive: boolean;
   readonly limit?: number;
   readonly offset?: number;
 
-  constructor(
-    user: Types.ObjectId | null,
-    query: IQueryGetSupportRequestsParams,
-  ) {
+  constructor(user: ID | null, query: IQueryGetSupportRequestsParams) {
     const { isActive, limit, offset } = query;
     this.user = user;
     this.isActive = isActive;
