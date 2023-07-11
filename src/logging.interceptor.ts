@@ -20,7 +20,7 @@ export class LoggingInterceptor implements NestInterceptor {
         console.log(`Execution time: ${Date.now() - now}ms`);
         console.log('\nRequest was failed');
         console.log(`\nError message: ${err}`);
-        return err;
+        throw err;
       }),
     );
   }

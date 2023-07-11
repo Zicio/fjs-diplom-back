@@ -44,13 +44,8 @@ export class UserManagementApiService {
         contactPhone,
         role,
       };
-    } catch (e: unknown) {
-      if (e instanceof BadRequestException) {
-        throw e;
-      }
-      throw new InternalServerErrorException(
-        'Ошибка при создании пользователя',
-      );
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -66,10 +61,7 @@ export class UserManagementApiService {
           contactPhone,
         };
       });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        throw e;
-      }
+    } catch (e) {
       throw new InternalServerErrorException(
         'Ошибка при получении пользователей',
       );

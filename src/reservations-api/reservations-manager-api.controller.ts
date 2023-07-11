@@ -4,7 +4,9 @@ import { Role, Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ID } from '../globalType';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Бронирование | Менеджер')
 @Controller('api/manager/reservations')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles([Role.Manager])

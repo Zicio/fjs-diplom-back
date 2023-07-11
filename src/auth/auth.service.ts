@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
@@ -69,11 +68,8 @@ export class AuthService {
         contactPhone,
       } as LoginResponseDto);
       return { email, name, contactPhone };
-    } catch (e: unknown) {
-      if (e instanceof UnauthorizedException) {
-        throw e;
-      }
-      throw new InternalServerErrorException('Вход не выполнен');
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -102,13 +98,8 @@ export class AuthService {
         ...rest,
       });
       return { id: newUser._id, email: newUser.email, name: newUser.name };
-    } catch (e: unknown) {
-      if (e instanceof BadRequestException) {
-        throw e;
-      }
-      throw new InternalServerErrorException(
-        'Произошла ошибка при создании пользователя',
-      );
+    } catch (e) {
+      throw e;
     }
   }
 }

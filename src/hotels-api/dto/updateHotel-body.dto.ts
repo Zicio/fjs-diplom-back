@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetHotelsBodyDto {
+export class UpdateHotelBodyDto {
   @ApiProperty({ example: 'Киев', description: 'Название гостиницы' })
   title: string;
 

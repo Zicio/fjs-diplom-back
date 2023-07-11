@@ -24,7 +24,7 @@ import { UpdateRoomDto } from './dto/updateRoom.dto';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { HotelResponseDto } from './dto/hotel-response.dto';
 import { RoomResponseDto } from './dto/room-response.dto';
-import { GetHotelsBodyDto } from './dto/getHotels-body.dto';
+import { UpdateHotelBodyDto } from './dto/updateHotel-body.dto';
 import { UpdateRoomBodyDto } from './dto/updateRoom-body.dto';
 import { ID } from '../globalType';
 
@@ -61,7 +61,7 @@ export class HotelsApiAdminController {
   @Put('hotels/:id')
   @ApiParam({ name: 'id', type: String, required: true, example: '1' })
   async updateHotel(
-    @Body() body: GetHotelsBodyDto,
+    @Body() body: UpdateHotelBodyDto,
     @Param('id') hotelId: ID,
   ): Promise<HotelResponseDto> {
     const updateHotelDto = new UpdateHotelDto(

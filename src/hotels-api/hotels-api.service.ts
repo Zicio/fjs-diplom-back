@@ -173,10 +173,7 @@ export class HotelsApiService {
         },
       };
     } catch (e) {
-      if (e instanceof NotFoundException) {
-        throw e;
-      }
-      throw new InternalServerErrorException('Ошибка при создании номера');
+      throw e;
     }
   }
 

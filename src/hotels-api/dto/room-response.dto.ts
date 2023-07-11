@@ -29,6 +29,6 @@ export class RoomResponseDto {
   })
   isEnabled?: boolean;
 
-  @ApiProperty({ description: 'Информация об отеле' })
+  @ApiProperty({ description: 'Информация о гостинице' })
   hotel: Hotel;
 }
