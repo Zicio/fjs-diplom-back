@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -12,6 +13,7 @@ import {
   HotelRoom,
   HotelRoomDocument,
 } from '../hotels/schemas/hotelRoom.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 
 interface IReservationDto {
   user: ID;
@@ -24,13 +26,13 @@ interface IReservationDto {
 interface IReservationSearchOptions {
   user: ID;
   // dateStart: Date;
-  // dateEnd: Date;  Зачем нужны оба??
+  // dateEnd: Date;  Зачем нужны оба, если они не передаются с запросом по заданию?
 }
 
 interface IReservationService {
   addReservation(data: IReservationDto): Promise<Reservation>;
 
-  removeReservation(id: ID, user: ID): Promise<void>;
+  removeReservation(id: ID, user: ID | null): Promise<void>;
 
   getReservations(
     filter: IReservationSearchOptions,
@@ -44,13 +46,15 @@ export class ReservationsService implements IReservationService {
     private reservationModel: Model<ReservationDocument>,
     @InjectModel(HotelRoom.name)
     private hotelRoomModel: Model<HotelRoomDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
   ) {}
 
   async addReservation(data: IReservationDto): Promise<Reservation> {
     const room = await this.hotelRoomModel.findById(data.room);
     if (!room || !room.isEnabled) {
       throw new BadRequestException(
-        'Номер с указанным ID не существует или он отключён',
+        'Номер с указанным ID не существует/отключён',
       );
     }
     data.hotel = room.hotel;
@@ -82,13 +86,13 @@ export class ReservationsService implements IReservationService {
     return reservation;
   }
 
-  async removeReservation(id: ID, user: ID): Promise<void> {
+  async removeReservation(id: ID, user: ID | null): Promise<void> {
     const reservation = await this.reservationModel.findById(id);
     if (!reservation) {
-      throw new BadRequestException('брони с указанным ID не существует');
+      throw new BadRequestException('Брони с указанным ID не существует');
     }
-    if (reservation.user !== user) {
-      throw new ForbiddenException('нет прав доступа');
+    if (user && reservation.user !== user) {
+      throw new ForbiddenException('Нет прав доступа');
     }
     await this.reservationModel.deleteOne({ _id: reservation._id });
   }
@@ -96,7 +100,14 @@ export class ReservationsService implements IReservationService {
   async getReservations(
     filter: IReservationSearchOptions,
   ): Promise<Array<Reservation>> {
-    const reservations = this.reservationModel.find(filter).populate([
+    const user = await this.userModel.findById(filter.user);
+    console.log({ user });
+    if (!user) {
+      throw new BadRequestException(
+        'Пользователя с указанным ID не существует',
+      );
+    }
+    const reservations = await this.reservationModel.find(filter).populate([
       { path: 'room', select: 'description images' },
       {
         path: 'hotel',
@@ -104,7 +115,7 @@ export class ReservationsService implements IReservationService {
       },
     ]);
     if (!reservations) {
-      throw new Error('Брони не найдены');
+      throw new InternalServerErrorException('Ошибка в получении броней');
     }
     return reservations;
   }

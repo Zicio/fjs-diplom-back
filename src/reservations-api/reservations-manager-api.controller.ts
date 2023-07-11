@@ -4,7 +4,10 @@ import { Role, Roles } from '../auth/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ID } from '../globalType';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ReservationResponseDto } from './dto/reservation-response.dto';
+import { GetReservationsDto } from './dto/getReservations.dto';
+import { DeleteReservationDto } from './dto/deleteReservation.dto';
 
 @ApiTags('Бронирование | Менеджер')
 @Controller('api/manager/reservations')
@@ -16,20 +19,24 @@ export class ReservationsManagerApiController {
   ) {}
 
   //  2.2.4. Список броней конкретного пользователя
-  @Get('manager/reservations/:userId')
+  @ApiOperation({ summary: 'Список броней конкретного пользователя' })
+  @ApiResponse({ status: 200, type: [ReservationResponseDto] })
+  @Get(':userId')
+  @ApiParam({ name: 'userId', type: String, required: true, example: '1' })
   async getReservationsByManager(
     @Param('userId') userId: ID,
-  ) /*: Promise<IReservation[]>*/ {
-    return 'Hello World!';
-    // return this.reservationsApiService.getReservationsByManager(userId);
+  ): Promise<ReservationResponseDto[]> {
+    const getReservationsDto = new GetReservationsDto(userId);
+    return this.reservationsApiService.getReservations(getReservationsDto);
   }
 
   //  2.2.5. Отмена бронирования менеджером
-  @Delete('manager/reservations/:userId')
-  async deleteReservationByManager(
-    @Param('userId') userId: ID,
-  ) /*: Promise<void>*/ {
-    return 'Hello World!';
-    // return this.reservationsApiService.deleteReservationByManager(userId);
+  @ApiOperation({ summary: 'Отмена бронирования менеджером' })
+  @ApiResponse({ status: 204, description: 'Пустой ответ' })
+  @Delete(':userId')
+  @ApiParam({ name: 'userId', type: String, required: true, example: '1' })
+  async deleteReservationByManager(@Param('userId') userId: ID): Promise<void> {
+    const deleteReservationDto = new DeleteReservationDto(userId, null);
+    return this.reservationsApiService.deleteReservation(deleteReservationDto);
   }
 }

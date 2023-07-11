@@ -17,7 +17,7 @@ import { ReservationResponseDto } from './dto/reservation-response.dto';
 import { Request } from 'express';
 import { UserDocument } from '../users/schemas/user.schema';
 import { AddReservationDto } from './dto/addReservation.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetReservationsDto } from './dto/getReservations.dto';
 import { ID } from '../globalType';
 import { DeleteReservationDto } from './dto/deleteReservation.dto';
@@ -58,6 +58,7 @@ export class ReservationsClientApiController {
   @ApiOperation({ summary: 'Отмена бронирования клиентом' })
   @ApiResponse({ status: 204, description: 'Пустой ответ' })
   @Delete(':id')
+  @ApiParam({ name: 'id', type: String, required: true, example: '1' })
   async deleteReservation(
     @Param('id') id: ID,
     @Req() req: Request & { user: UserDocument },

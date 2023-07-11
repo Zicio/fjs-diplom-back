@@ -45,6 +45,7 @@ export class ReservationsApiService {
   }
 
   //  2.2.2. Список броней текущего пользователя
+  //  2.2.4. Список броней конкретного пользователя
   async getReservations(
     getReservationsDto: GetReservationsDto,
   ): Promise<ReservationResponseDto[]> {
