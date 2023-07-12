@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
     UsersModule,
     PassportModule,
     JwtModule.register({
+      global: true,
       secret: process.env.JWT_SECRET || 'SECRETIK',
       signOptions: {
         expiresIn: process.env.JWT_EXPIRES || '24h',

@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Role, ROLES_KEY } from '../roles.decorator';
 
-@Injectable()
+@Injectable() //  TODO: попробовать перенести в hotels-api
 export class isEnabledGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();

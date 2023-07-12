@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
-import { isEnabledGuard } from 'src/auth/guards/isEnabled.guard';
+import { isEnabledGuard } from 'src/auth/guards/is-enabled.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 
 import { HotelsApiService } from './hotels-api.service';

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import {
   SupportRequest,
@@ -141,7 +141,9 @@ export class SupportRequestsService implements ISupportRequestService {
               .findById(latestMessage)
               .populate('author', 'id name');
             if (!message) {
-              return;
+              throw new InternalServerErrorException(
+                'Ошибка в получении нового сообщения',
+              );
             }
             handler(supportRequest, message);
           }

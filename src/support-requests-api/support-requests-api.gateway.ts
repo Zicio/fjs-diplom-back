@@ -9,6 +9,11 @@ import { SupportRequestDocument } from '../support-requests/schemas/support-requ
 import { MessageDocument } from '../support-requests/schemas/message.schema';
 import { Socket } from 'socket.io';
 import { ID } from '../globalType';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
+import { Role, Roles } from '../auth/roles.decorator';
+import { JwtSocketAuthGuard } from './guards/jwt-socket-auth.guard';
 
 @WebSocketGateway({
   cors: {
@@ -19,8 +24,8 @@ export class SupportRequestsApiGateway {
   constructor(private readonly supportRequestService: SupportRequestsService) {}
 
   //  2.5.7. Подписка на сообщения из чата техподдержки
-  // @UseGuards(JwtAuthGuard, RolesGuard, SupportRequestsAccessGuard) //  TODO: разобраться как в данном случае работать с guards
-  // @Roles([Role.Manager, Role.Client])
+  @UseGuards(JwtSocketAuthGuard, RolesGuard, SupportRequestsAccessGuard)
+  @Roles([Role.Manager, Role.Client])
   @SubscribeMessage('subscribeToChat')
   handleSubscribeToChat(
     @ConnectedSocket() client: Socket,

@@ -6,6 +6,8 @@ import { SupportRequestsApiService } from './support-requests-api.service';
 import { SupportRequestsModule } from '../support-requests/support-requests.module';
 import { UsersModule } from '../users/users.module';
 import { SupportRequestsApiGateway } from './support-requests-api.gateway';
+import { JwtSocketStrategy } from './jwt-socket.strategy';
+import { AuthService } from '../auth/auth.service';
 
 @Module({
   imports: [SupportRequestsModule, UsersModule],
@@ -14,6 +16,11 @@ import { SupportRequestsApiGateway } from './support-requests-api.gateway';
     SupportRequestsCommonApiController,
     SupportRequestsManagerApiController,
   ],
-  providers: [SupportRequestsApiService, SupportRequestsApiGateway],
+  providers: [
+    JwtSocketStrategy,
+    AuthService,
+    SupportRequestsApiService,
+    SupportRequestsApiGateway,
+  ],
 })
 export class SupportRequestsApiModule {}
