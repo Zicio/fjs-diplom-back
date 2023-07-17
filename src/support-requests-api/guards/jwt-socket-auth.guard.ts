@@ -1,10 +1,7 @@
 import { Observable } from 'rxjs';
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class JwtSocketAuthGuard extends AuthGuard('jwt-socket') {
@@ -15,11 +12,8 @@ export class JwtSocketAuthGuard extends AuthGuard('jwt-socket') {
   }
 
   public handleRequest(err: Error, user: any) {
-    if (err) {
-      throw err;
-    }
-    if (!user) {
-      throw new UnauthorizedException('Вы не авторизованы');
+    if (err || !user) {
+      throw new WsException('Вы не авторизованы');
     }
     return user;
   }

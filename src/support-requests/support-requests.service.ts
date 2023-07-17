@@ -118,6 +118,7 @@ export class SupportRequestsService implements ISupportRequestService {
   subscribe(
     handler: (supportRequest: SupportRequest, message: Message) => void,
   ) {
+    console.log('b');
     const changeStream = this.supportRequestModel.watch();
 
     changeStream.on('change', async (change) => {

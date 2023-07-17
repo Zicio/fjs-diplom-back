@@ -10,10 +10,10 @@ import { MessageDocument } from '../support-requests/schemas/message.schema';
 import { Socket } from 'socket.io';
 import { ID } from '../globalType';
 import { UseGuards } from '@nestjs/common';
+import { JwtSocketAuthGuard } from './guards/jwt-socket-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { SupportRequestsAccessGuard } from './guards/support-requests-access.guard';
 import { Role, Roles } from '../auth/roles.decorator';
-import { JwtSocketAuthGuard } from './guards/jwt-socket-auth.guard';
 
 @WebSocketGateway({
   cors: {
@@ -31,6 +31,7 @@ export class SupportRequestsApiGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { chatId: string },
   ) {
+    console.log('a');
     const handler = (
       supportRequest: SupportRequestDocument,
       message: MessageDocument & {
