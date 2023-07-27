@@ -59,6 +59,8 @@ export class AuthService {
       const token: string = await this.createToken(user);
       res.cookie('access_token', token, {
         httpOnly: true,
+        domain: 'localhost',
+        path: '/',
         maxAge: Number(process.env.COOKIE_EXPIRES) || 45 * 60 * 1000,
       });
       const { email, name, contactPhone } = user;
