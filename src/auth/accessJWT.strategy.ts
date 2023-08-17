@@ -5,12 +5,12 @@ import { UserDocument } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessJWTStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'SECRETIK',
+      secretOrKey: process.env.JWT_ACCESS_SECRET || 'secret',
     });
   }
 

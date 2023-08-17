@@ -9,4 +9,7 @@ export class LoginResponseDto {
 
   @ApiProperty({ example: '89271111111', description: 'Телефон пользователя' })
   readonly contactPhone: string;
+
+  @ApiProperty({ example: '89271111111', description: 'Access JWT' })
+  readonly accessToken: string;
 }

@@ -3,8 +3,13 @@ services:
     build: ./
     environment:
       - PORT=4000
-      - JWT_SECRET=SECRETIK
-      - JWT_EXPIRES=24h
+      - JWT_ACCESS_SECRET=secret
+      - JWT_REFRESH_SECRET=supersecret
+      - JWT_ACCESS_EXPIRES=1800
+      - JWT_REFRESH_EXPIRES=2419200
+      - COOKIE_EXPIRES=2419200
+      - ROLES_KEY=role
+      - CLIENT_URL=http://localhost:3000
     volumes:
       - .:/app
       - /app/node_modules

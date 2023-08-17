@@ -8,9 +8,10 @@ import { UsersModule } from '../users/users.module';
 import { SupportRequestsApiGateway } from './support-requests-api.gateway';
 import { JwtSocketStrategy } from './jwt-socket.strategy';
 import { AuthService } from '../auth/auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [SupportRequestsModule, UsersModule],
+  imports: [SupportRequestsModule, UsersModule, JwtModule.register({})],
   controllers: [
     SupportRequestsClientApiController,
     SupportRequestsCommonApiController,
